@@ -1,3 +1,3 @@
-### CPU Sampling with perf and Flame Graphs
+### CPU Sampling with `perf` and Flame Graphs
 
 TODO
