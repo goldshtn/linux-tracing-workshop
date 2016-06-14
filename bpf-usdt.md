@@ -101,7 +101,7 @@ $ curl 'localhost:8080/login?user=dave&pwd=123'
 
 - - -
 
-#### Task 3: Enabling and Tracing JVM USDT Probes with `argdist`
+#### Task 3: Enabling and Tracing JVM USDT Probes with `trace`
 
 OpenJDK is also instrumented with a number of USDT probes. Most of them are enabled out of the box, and some must be enabled with a special `-XX:+ExtendedDTraceProbes` flag, because they incur a performance penalty. To explore some of these probes, navigate to your `$JAVA_HOME` and take a look in the **tapset** directory:
 
@@ -116,13 +116,88 @@ jstack-1.8.0.77-1.b03.fc22.x86_64.stp
 
 These .stp files contain descriptions and declarations for a bunch of probes, including their arguments. As an example, try to find the `gc_collect_tenured_begin` and `gc_collect_tenured_end` probe descriptions.
 
-TODO
+Now, let's move to a more practical example. You are now going to trace a running Java application and see which classes are being loaded, by using the `class_loaded` probe. First, find its "documentation":
+
+```
+$ grep -A 10 'probe.*class_loaded' tapset/*.stp
+hotspot-1.8.0.77-1.b03.fc22.x86_64.stp:probe hotspot.class_loaded = 
+hotspot-1.8.0.77-1.b03.fc22.x86_64.stp-  process("/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.77-1.b03.fc22.x86_64/jre/lib/amd64/server/libjvm.so").mark("class__loaded")                                      
+hotspot-1.8.0.77-1.b03.fc22.x86_64.stp-{                           
+hotspot-1.8.0.77-1.b03.fc22.x86_64.stp-  name = "class_loaded";    
+hotspot-1.8.0.77-1.b03.fc22.x86_64.stp-  class = user_string_n($arg1, $arg2);                                                         
+hotspot-1.8.0.77-1.b03.fc22.x86_64.stp-  classloader_id = $arg3;   
+hotspot-1.8.0.77-1.b03.fc22.x86_64.stp-  is_shared = $arg4;        
+hotspot-1.8.0.77-1.b03.fc22.x86_64.stp-  probestr = sprintf("%s(class='%s',classloader_id=0x%x,is_shared=%d)",                        
+hotspot-1.8.0.77-1.b03.fc22.x86_64.stp-                     name, class, classloader_id, is_shared);                                  
+hotspot-1.8.0.77-1.b03.fc22.x86_64.stp-}                           
+hotspot-1.8.0.77-1.b03.fc22.x86_64.stp-
+```
+
+It looks like there are four arguments, and the class name being loaded is given as as the first argument. At this point, we can run a Java application (this is [Slowy.java](slowy/Slowy.java)):
+
+```
+$ java slowy/App
+```
+
+And now discover the available tracepoints using `tplist`:
+
+```
+# jps
+31156 App
+31398 Jps
+# tplist.py -p 31156 '*class*loaded'
+/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.77-1.b03.fc22.x86_64/jre/lib/amd64/server/libjvm.so hotspot:class__unloaded
+/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.77-1.b03.fc22.x86_64/jre/lib/amd64/server/libjvm.so hotspot:class__loaded
+```
+
+And finally we can trace the interesting tracepoint with `trace`:
+
+```
+# trace.py '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.77-1.b03.fc22.x86_64/jre/lib/amd64/server/libjvm.so:class__loaded "%s", arg1'
+```
+
+At this point, you should get a trace message whenever a Java app loads a class. For example, let the Slowy app terminate -- are there any classes being loaded on the shutdown path?
 
 - - -
 
-#### Bonus: Discovering Probes in Oracle JDK
+#### Task 4: Using JVM Extended USDT Probes with `argdist`
 
-**TODO**
+Finally, let's experiment with one of the extended probes, which isn't always enabled because of its overhead. A couple of these probes are called on method entry and exit, and can be used for simple profiling (albeit with a pretty considerable cost). First, let's find the probes in the .stp file. They are called `method_entry` and `method_return`:
+
+```
+$ grep -A 10 'probe.*method_entry' *.stp
+$ grep -A 10 'probe.*method_return' *.stp
+```
+
+As you can see from the results, the class name, method, and signature are available in $arg2, $arg4, and $arg6, respectively. Both probes use the same convention. Now, let's use `argdist` to figure out which methods are being called most often:
+
+```
+# argdist.py -C 'u:/usr/lib/.../libjvm.so:method__entry():char*:arg4' -T 5
+```
+
+In another shell, run the Slowy app with the extended probes configured (and disable inlining so that no methods are optimized away):
+
+```
+$ java -XX:-Inline -XX:+ExtendedDTraceProbes slowy/App
+```
+
+Every five seconds, you should now get a printout of the methods that were called most frequently. It's just the method names, but that's not too shabby. Now, suppose you actually wanted the execution time of each method. That's something `argdist` currently can't handle (it can trace function entry and return, but not probe pairs like we have in this case). However, we can get some basic results with `trace` and post-process them later -- or build a new BCC tool! For now, let's use `trace`
+to get all method entry and return events and print them out nicely:
+
+```
+# trace.py -o 'u:/usr/lib/.../libjvm.so:method__entry "%s.%s", arg2, arg4' 'u:/usr/lib/.../libjvm.so:method__return "%s.%s", arg2, arg4'
+```
+
+If you run the Slowy app again with the extended probes configured, you should get a bunch of printouts for the methods being entered and exited.
+
+> Unfortunately, you might also see printouts indicating that events are being lost -- we are not printing them quickly enough and the cyclic buffer used for kernel-mode and user-mode communication fills up, discarding some events. This is one of the reasons we're advocating for building custom BPF tools -- they will almost always be more
+efficient than trying to grab everything from the kernel and perform aggregations on a large number of events in user space.
+
+- - -
+
+#### Bonus: Discovering Probes in Oracle JVM
+
+So, you think OpenJDK USDT probes are cool? For this bonus task, try to figure out if the Oracle HotSpot VM is also instrumented with USDT probes. See if you can trace some of them with `argdist`, `trace`, or both.
 
 - - -
 
