@@ -103,4 +103,26 @@ $ curl 'localhost:8080/login?user=dave&pwd=123'
 
 #### Task 3: Enabling and Tracing JVM USDT Probes with `argdist`
 
+OpenJDK is also instrumented with a number of USDT probes. Most of them are enabled out of the box, and some must be enabled with a special `-XX:+ExtendedDTraceProbes` flag, because they incur a performance penalty. To explore some of these probes, navigate to your `$JAVA_HOME` and take a look in the **tapset** directory:
+
+```
+$ cd /etc/alternatives/java_sdk
+$ ls tapset/
+hotspot-1.8.0.77-1.b03.fc22.x86_64.stp
+hotspot_gc-1.8.0.77-1.b03.fc22.x86_64.stp
+hotspot_jni-1.8.0.77-1.b03.fc22.x86_64.stp
+jstack-1.8.0.77-1.b03.fc22.x86_64.stp
+```
+
+These .stp files contain descriptions and declarations for a bunch of probes, including their arguments. As an example, try to find the `gc_collect_tenured_begin` and `gc_collect_tenured_end` probe descriptions.
+
+TODO
+
 - - -
+
+#### Bonus: Discovering Probes in Oracle JDK
+
+**TODO**
+
+- - -
+
