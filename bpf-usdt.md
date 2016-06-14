@@ -69,6 +69,36 @@ It is quite clear what the arguments mean now, and we can use them with the othe
 
 #### Task 2: Enabling and Tracing Node USDT Probes with `trace`
 
+Let's now make sure that we can trace some HTTP requests with the USDT support embedded in Node. For this experiment, you can build your own Node HTTP server, or just use the [server.js](server.js) file, reproduced here in its entirety:
+
+```javascript
+var http = require('http');
+var server = http.createServer(function (req, res) {
+    res.end('Hello, world!');
+});
+server.listen(8080);
+```
+
+You can run this server using the following command:
+
+```
+$ node server.js
+```
+
+In a root shell, navigate to the **tools** directory under the BCC source, and use the following command to attach to the `node:http__server__request` USDT event and trace out a message whenever a request arrives. Note that the process id is required because the Node USDT events are not enabled by default. The tracing program must poke a global variable that the probing code reads in order to enable the probe, and that happens on a per-process basis.
+
+```
+# trace.py -p $(pidof node) 'u:/opt/node/node:http__server__request "%s %s", arg5, arg6'
+```
+
+Here, `arg5` is going to be the HTTP method and `arg6` is going to be the request URL -- as we discovered by inspecting the .stp file. Finally, make some HTTP requests to your server and make sure you see them in the trace:
+
+```
+$ curl localhost:8080
+$ curl localhost:8080/index.html
+$ curl 'localhost:8080/login?user=dave&pwd=123'
+```
+
 - - -
 
 #### Task 3: Enabling and Tracing JVM USDT Probes with `argdist`
