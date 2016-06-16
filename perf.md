@@ -74,7 +74,26 @@ Open the resulting flame graph and enjoy the results. It is now immediately evid
 
 #### Task 4: Flame Graphs for Java Code
 
-TODO
+Finally, you are going to profile some Java code and generate flame graphs for that as well. To help `perf` figure out the symbols (function names) for your Java code, you will use [perf-map-agent](https://github.com/jrudolph/perf-map-agent), which attaches to your Java process and generates map files that map dynamically-generated Java machine code to class and method names. `perf-map-agent` can also run the whole recording session for you, through a set of handy scripts such as
+`perf-java-record-stack` and `perf-java-report-stack`.
+
+First, run the Java application that we're about to profile. It is a Java version of the same prime-counting app:
+
+```
+$ cd slowy
+$ java -XX:+PreserveFramePointer Slowy
+```
+
+Do not hit ENTER yet. Instead, in another (non-root) shell, run `jps` to find the process id for the Slowy app, and then run the collection tool:
+
+```
+$ jps
+2144 Jps
+2132 Slowy
+$ ./perf-java-report-stack 2132   # use the pid from the previous step on your system
+```
+
+If everything went well, you should see the `perf report` ncurses UI, showing the bottlenecks in the Java program. These will likely be `Slowy::main` and `Slowy:isPrime`, because the smaller methods were optimized away (inlined). You can repeat the experiment and run Slowy with the `-XX:-Inline` switch to prevent this optimization and obtain more accurate results that include the `Slowy::isDivisible` method.
 
 - - -
 
