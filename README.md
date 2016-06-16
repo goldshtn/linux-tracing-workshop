@@ -8,6 +8,7 @@ This repository contains examples and hands-on labs for various Linux tracing wo
 
 1. Linux 4.6+ (the distribution doesn't matter; tested on Ubuntu and Fedora Core)
 1. [perf](https://perf.wiki.kernel.org/index.php/Main_Page)
+1. [perf-map-agent](https://github.com/jrudolph/perf-map-agent)
 1. [FlameGraph](https://github.com/brendangregg/FlameGraph)
 1. [bcc](https://github.com/iovisor/bcc/blob/master/INSTALL.md)
 1. [Node.js](https://github.com/nodejs/node/wiki/Installation) built from source with `configure --with-dtrace`
