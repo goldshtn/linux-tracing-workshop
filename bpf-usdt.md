@@ -22,19 +22,19 @@ $ sudo make install
 Now, you can use `tplist` to discover USDT probes in the Node executable. Run the following command (provide the full paths to `tplist` and `node` as necessary):
 
 ```
-$ tplist.py -l node 
+$ tplist -l node 
 ```
 
 This should print out a number of USDT probes, including `node:http__server__request` and `node:gc__start`. There are more probes embedded in a typical Node process, however -- you can see exactly what's available (possibly through additional libraries) by running `node` in the background and then using the following command:
 
 ```
-$ tplist.py -p $(pidof node)
+$ tplist -p $(pidof node)
 ```
 
 You should now see USDT probes from libc and libstdcxx as well. You can also ask `tplist` to print out more details about each probe. For example, here are the arguments for the `node:http__server_request` probe as reported by `tplist`:
 
 ```
-$ tplist.py -l node -v '*server__request'
+$ tplist -l node -v '*server__request'
 /home/vagrant/node/out/Release/node node:http__server__request [sema 0x1606c34]
   location 0xef4854 raw args: 8@%r14 8@%rax 8@-4328(%rbp) -4@-4332(%rbp) 8@-4288(%rbp) 8@-4296(%rbp) -4@-4336(%rbp)
     8 unsigned bytes @ register %r14
@@ -88,7 +88,7 @@ $ node server.js
 In a root shell, navigate to the **tools** directory under the BCC source, and use the following command to attach to the `node:http__server__request` USDT event and trace out a message whenever a request arrives. Note that the process id is required because the Node USDT events are not enabled by default. The tracing program must poke a global variable that the probing code reads in order to enable the probe, and that happens on a per-process basis.
 
 ```
-# trace.py -p $(pidof node) 'u:/opt/node/node:http__server__request "%s %s", arg5, arg6'
+# trace -p $(pidof node) 'u:/opt/node/node:http__server__request "%s %s", arg5, arg6'
 ```
 
 Here, `arg5` is going to be the HTTP method and `arg6` is going to be the request URL -- as we discovered by inspecting the .stp file. Finally, make some HTTP requests to your server and make sure you see them in the trace:
@@ -145,7 +145,7 @@ And now discover the available tracepoints using `tplist`:
 # jps
 31156 App
 31398 Jps
-# tplist.py -p 31156 '*class*loaded'
+# tplist -p 31156 '*class*loaded'
 /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.77-1.b03.fc22.x86_64/jre/lib/amd64/server/libjvm.so hotspot:class__unloaded
 /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.77-1.b03.fc22.x86_64/jre/lib/amd64/server/libjvm.so hotspot:class__loaded
 ```
@@ -153,7 +153,7 @@ And now discover the available tracepoints using `tplist`:
 And finally we can trace the interesting tracepoint with `trace`:
 
 ```
-# trace.py '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.77-1.b03.fc22.x86_64/jre/lib/amd64/server/libjvm.so:class__loaded "%s", arg1'
+# trace '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.77-1.b03.fc22.x86_64/jre/lib/amd64/server/libjvm.so:class__loaded "%s", arg1'
 ```
 
 At this point, you should get a trace message whenever a Java app loads a class. For example, let the Slowy app terminate -- are there any classes being loaded on the shutdown path?
@@ -172,7 +172,7 @@ $ grep -A 10 'probe.*method_return' *.stp
 As you can see from the results, the class name, method, and signature are available in $arg2, $arg4, and $arg6, respectively. Both probes use the same convention. Now, let's use `argdist` to figure out which methods are being called most often:
 
 ```
-# argdist.py -C 'u:/usr/lib/.../libjvm.so:method__entry():char*:arg4' -T 5
+# argdist -C 'u:/usr/lib/.../libjvm.so:method__entry():char*:arg4' -T 5
 ```
 
 In another shell, run the Slowy app with the extended probes configured (and disable inlining so that no methods are optimized away):
@@ -185,7 +185,7 @@ Every five seconds, you should now get a printout of the methods that were calle
 to get all method entry and return events and print them out nicely:
 
 ```
-# trace.py -o 'u:/usr/lib/.../libjvm.so:method__entry "%s.%s", arg2, arg4' 'u:/usr/lib/.../libjvm.so:method__return "%s.%s", arg2, arg4'
+# trace -o 'u:/usr/lib/.../libjvm.so:method__entry "%s.%s", arg2, arg4' 'u:/usr/lib/.../libjvm.so:method__return "%s.%s", arg2, arg4'
 ```
 
 If you run the Slowy app again with the extended probes configured, you should get a bunch of printouts for the methods being entered and exited.
