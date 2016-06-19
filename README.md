@@ -20,7 +20,7 @@ This repository contains examples and hands-on labs for various Linux tracing wo
 1. [Probing Tracepoints with ftrace](ftrace.md)
 1. [CPU Sampling with `perf` and Flame Graphs](perf.md)
 1. [Using BPF Tools: Chasing a Memory Leak](bpf-memleak.md)
-1. [Using BPF Tools: Disk and Network Stats and Stacks](bpf-io.md)
+1. [Using BPF Tools: Database and Disk Stats and Stacks](bpf-io.md)
 1. [Using BPF Tools: Node and JVM USDT Probes](bpf-usdt.md)
 1. [Writing BPF Tools: Contention Stats and Stacks](bpf-contention.md)
 
