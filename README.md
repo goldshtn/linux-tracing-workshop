@@ -13,6 +13,7 @@ This repository contains examples and hands-on labs for various Linux tracing wo
 1. [bcc](https://github.com/iovisor/bcc/blob/master/INSTALL.md)
 1. [Node.js](https://github.com/nodejs/node/wiki/Installation) built from source with `configure --with-dtrace`
 1. MySQL or [MariaDB](https://mariadb.org)
+1. [MySQL Python Connector](https://dev.mysql.com/doc/connector-python/en/connector-python-installation.html)
 
 - - -
 
