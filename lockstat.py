@@ -90,17 +90,10 @@ int probe_mutex_lock_return(struct pt_regs *ctx)
         lock_end.update(&key, &val);
     }
 
-    // Record the wait time for this mutex-tid-stack combination even if locking failed
     struct thread_mutex_key_t tm_key = {};
-    tm_key.mtx = entry->mtx;
-    tm_key.tid = pid;
-    tm_key.lock_stack_id = stack_id;
-    struct thread_mutex_val_t *existing_tm_val, new_tm_val = {};
-    existing_tm_val = locks.lookup_or_init(&tm_key, &new_tm_val);
-    existing_tm_val->wait_time_ns += wait_time;
-    if (PT_REGS_RC(ctx) == 0) {
-        existing_tm_val->enter_count += 1;
-    }
+    // TODO Update tm_key fields with the mutex, tid, and stack id
+    // TODO Call locks.lookup_or_init(...) and update the wait time and the enter count
+    //      of the entry in the locks data structure
 
     u64 mtx_slot = bpf_log2l(wait_time / 1000);
     mutex_wait_hist.increment(mtx_slot);
@@ -133,8 +126,7 @@ int probe_mutex_unlock(struct pt_regs *ctx)
         return 0;   // Couldn't find this record
     existing_tm_val->lock_time_ns += hold_time;
 
-    u64 slot = bpf_log2l(hold_time / 1000);
-    mutex_lock_hist.increment(slot);
+    // TODO Update the mutex_lock_hist histogram with the time we held the lock
 
     lock_end.delete(&lock_key);
 
@@ -152,9 +144,10 @@ int probe_mutex_init(struct pt_regs *ctx)
 
 def attach(bpf, pid):
     bpf.attach_uprobe(name="pthread", sym="pthread_mutex_init", fn_name="probe_mutex_init", pid=pid)
-    bpf.attach_uprobe(name="pthread", sym="pthread_mutex_lock", fn_name="probe_mutex_lock", pid=pid)
-    bpf.attach_uretprobe(name="pthread", sym="pthread_mutex_lock", fn_name="probe_mutex_lock_return", pid=pid)
-    bpf.attach_uprobe(name="pthread", sym="pthread_mutex_unlock", fn_name="probe_mutex_unlock", pid=pid)
+    # TODO Similarly to the previous probe, attach the following probes:
+    #   uprobe    in pthread_mutex_lock   handled by probe_mutex_lock
+    #   uretprobe in pthread_mutex_lock   handled by probe_mutex_lock_return
+    #   uprobe    in pthread_mutex_unlock handled by probe_mutex_unlock
 
 def print_frame(syms, addr):
     print("\t\t%16s (%x)" % (syms.decode_addr(addr), addr))
@@ -191,9 +184,8 @@ def run(pid):
             print("thread %d" % tid)
             for k, v in sorted(items, key=lambda (k, v): -v.wait_time_ns):
                 mutex_descr = mutex_ids[k.mtx] if k.mtx in mutex_ids else syms.decode_addr(k.mtx)
-                print("\tmutex %s ::: wait time %.2fus ::: hold time %.2fus ::: enter count %d" %
-                      (mutex_descr, v.wait_time_ns/1000.0, v.lock_time_ns/1000.0, v.enter_count))
-                print_stack(syms, stacks, k.lock_stack_id)
+                # TODO Print a nicely formatted line with the mutex description, wait time,
+                #      hold time, enter count, and stack (use print_stack)
                 print("")
         mutex_wait_hist.print_log2_hist(val_type="wait time (us)")
         mutex_lock_hist.print_log2_hist(val_type="hold time (us)")
