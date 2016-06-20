@@ -12,6 +12,7 @@ This repository contains examples and hands-on labs for various Linux tracing wo
 1. [FlameGraph](https://github.com/brendangregg/FlameGraph)
 1. [bcc](https://github.com/iovisor/bcc/blob/master/INSTALL.md)
 1. [Node.js](https://github.com/nodejs/node/wiki/Installation) built from source with `configure --with-dtrace`
+1. MySQL or [MariaDB](https://mariadb.org)
 
 - - -
 
