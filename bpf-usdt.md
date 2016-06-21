@@ -153,7 +153,7 @@ And now discover the available tracepoints using `tplist`:
 And finally we can trace the interesting tracepoint with `trace`:
 
 ```
-# trace '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.77-1.b03.fc22.x86_64/jre/lib/amd64/server/libjvm.so:class__loaded "%s", arg1'
+# trace 'u:/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.77-1.b03.fc22.x86_64/jre/lib/amd64/server/libjvm.so:class__loaded "%s", arg1'
 ```
 
 At this point, you should get a trace message whenever a Java app loads a class. For example, let the Slowy app terminate -- are there any classes being loaded on the shutdown path?
