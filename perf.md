@@ -83,13 +83,14 @@ First, run the [Java application](slowy/Slowy.java) that we're about to profile.
 $ java -XX:+PreserveFramePointer slowy/App
 ```
 
-Do not hit ENTER yet. Instead, in another (non-root) shell, run `jps` to find the process id for the Slowy app, and then run the collection tool:
+Do not hit ENTER yet. Instead, in another (non-root) shell, run `jps` to find the process id for the Slowy app, and then run the collection tool. After you run `perf-java-report-stack`, hit ENTER in the Java app's console so that the collection tool records some meaningful work.
 
 ```
 $ jps
 2144 Jps
 2132 Slowy
-$ ./perf-java-report-stack 2132   # use the pid from the previous step on your system
+$ ./perf-java-report-stack 2132   # use the pid from the previous step
+                                  # hit ENTER in the java console
 ```
 
 If everything went well, you should see the `perf report` ncurses UI, showing the bottlenecks in the Java program. These will likely be `Slowy::main` and `Slowy:isPrime`, because the smaller methods were optimized away (inlined). You can repeat the experiment and run Slowy with the `-XX:-Inline` switch to prevent this optimization and obtain more accurate results that include the `Slowy::isDivisible` method.
