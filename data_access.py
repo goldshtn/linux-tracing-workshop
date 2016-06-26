@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
+from random import randint
 import sys
 import mysql.connector
+
+NUM_EMPLOYEES = 10000
 
 def insert():
     cursor = connection.cursor()
@@ -13,7 +16,7 @@ def insert():
     cursor.close()
 
     print("Inserting employees...")
-    for n in xrange(0, 10000):
+    for n in xrange(0, NUM_EMPLOYEES):
         cursor = connection.cursor()
         cursor.execute("insert into employees (id, name) values (%d, 'Employee_%d')" %
                        (n, n))
@@ -24,7 +27,7 @@ def select():
     print("Selecting employees...")
     while True:
         cursor = connection.cursor()
-        cursor.execute("select * from employees where name like '%1417773'")
+        cursor.execute("select * from employees where name like '%%%d'" % randint(0, NUM_EMPLOYEES))
         for row in cursor:
             pass
         cursor.close()
