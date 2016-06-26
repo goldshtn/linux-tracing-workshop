@@ -28,6 +28,10 @@ This is a tool that would print histograms of blocked time by process, possibly 
 
 This is a tool that would print histograms of on-CPU time by process, possibly with stack traces as well. It should be based on the `sched:sched_switch` tracepoint.
 
+* [`lockstat`](https://github.com/iovisor/bcc/issues/378) *Open-Ended*
+
+This expands on the [`lockstat` lab](bpf-contention.md) to build a full contention monitoring tool with wait graph support.
+
 - - -
 
 #### Documentation Tasks
@@ -48,10 +52,6 @@ Add a reference guide that documents the `BPF` module and its sub-modules.
 
 Which kernel build flags are required to use the BPF-based tools? Which kernel version supports which features, for which tools?
 
-- - -
-
-#### Testing Tasks
-
 * Testing on a New Distribution *Medium*
 
 Find a distribution that isn't covered by the installation requirements, and see if you can get BCC to compile from source on that platform. Document your findings as a PR to the [INSTALL.md](https://github.com/iovisor/bcc/blob/master/INSTALL.md) file or as a separate file linked from INSTALL.md.
@@ -63,5 +63,13 @@ Find a distribution that isn't covered by the installation requirements, and see
 * [Executable File Path Resolution](https://github.com/iovisor/bcc/issues/565) *Short*
 
 Update BCC to allow tools like `trace` and `argdist` to specify an executable name which is in the PATH and get it resolved automatically.
+
+* [Higher-Level Language Support](https://github.com/iovisor/bcc/issues/425) *Open-Ended*
+
+Explore building a higher-level language (such as DTrace's language) for expressing BPF probes.
+
+* [Regex Support For UProbes](https://github.com/iovisor/bcc/issues/389) *Short*
+
+Allow using a regular expression for the function name when using `attach_uprobe`.
 
 - - -
