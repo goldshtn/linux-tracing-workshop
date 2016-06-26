@@ -12,6 +12,10 @@ Each task has a rough time estimate attached to it, where:
 
 #### Tool Development Tasks
 
+* [Generalize `stackcount`](https://github.com/iovisor/bcc/issues/580) *Medium*
+
+Make `stackcount` support user-mode functions, tracepoints, and USDT probes in addition to kernel functions, which it currently supports.
+
 * [Differentiate pids and tids](https://github.com/iovisor/bcc/issues/547) *Medium*
 
 Update all tools that take a command-line pid or tid argument and that print a pid or tid to make it clear what is being printed. The `bpf_get_current_pid_tgid()` helper returns 64 bits, the lower 32 bits being the tid (`task->pid`). A lot of tools that should really match, filter, or print the pid (`task->tgid`) use this value instead.
