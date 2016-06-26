@@ -27,6 +27,7 @@ This repository contains examples and hands-on labs for various Linux tracing wo
 1. [Using BPF Tools: Database and Disk Stats and Stacks](bpf-io.md)
 1. [Using BPF Tools: Node and JVM USDT Probes](bpf-usdt.md)
 1. [Writing BPF Tools: Contention Stats and Stacks](bpf-contention.md)
+1. [Writing BPF Tools: From BCC GitHub Issues](bpf-issues.md)
 
 - - -
 
