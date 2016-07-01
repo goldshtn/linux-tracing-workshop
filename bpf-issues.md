@@ -12,6 +12,10 @@ Each task has a rough time estimate attached to it, where:
 
 #### Tool Development Tasks
 
+* [Min and Max Thresholds in `offcputime`](https://github.com/iovisor/bcc/issues/588) *Short*
+
+Add min and max thresholds to let the user choose the latency range for off-CPU events, e.g. to diagnose a specific latency problem.
+
 * [Generalize `stackcount`](https://github.com/iovisor/bcc/issues/580) *Medium*
 
 Make `stackcount` support user-mode functions, tracepoints, and USDT probes in addition to kernel functions, which it currently supports.
@@ -24,14 +28,6 @@ Update all tools that take a command-line pid or tid argument and that print a p
 
 There are still a couple of tools remaining that print to the trace pipe, which is shared with other Linux tools. Replace any remaining usages of the trace pipe with the `BPF_PERF_OUTPUT` mechanism and move the old versions of the tools to **old/**.
 
-* [`offcpudist`](https://github.com/iovisor/bcc/issues/500) *Medium*
-
-This is a tool that would print histograms of blocked time by process, possibly with stack traces as well. It should be based on the `sched:sched_switch` tracepoint.
-
-* [`cpudist`](https://github.com/iovisor/bcc/issues/499) *Medium*
-
-This is a tool that would print histograms of on-CPU time by process, possibly with stack traces as well. It should be based on the `sched:sched_switch` tracepoint.
-
 * [`lockstat`](https://github.com/iovisor/bcc/issues/378) *Open-Ended*
 
 This expands on the [`lockstat` lab](bpf-contention.md) to build a full contention monitoring tool with wait graph support.
@@ -40,9 +36,13 @@ This expands on the [`lockstat` lab](bpf-contention.md) to build a full contenti
 
 #### Documentation Tasks
 
+* [Tracepoint Example](https://github.com/iovisor/bcc/issues/567) *Short*
+
+Add a simple example of instrumenting a kernel tracepoint based on the new BCC tracepoint support. This should also explain how to use `tplist` to automatically generate the tracepoint structure.
+
 * [man Page Version Update](https://github.com/iovisor/bcc/issues/569) *Short*
 
-Update the tools' man pages to reflect which minimum kernel version is required to run the tool.
+Update the tools' man pages to reflect which minimum kernel version is required to run the tool. Notably, tools that rely on perf output buffers require kernel 4.4, tools that rely on stack tracing require kernel 4.6, and tools that rely on BPF support for tracepoints require kernel 4.7.
 
 * [LINKS.md](https://github.com/iovisor/bcc/issues/466) *Short*
 
