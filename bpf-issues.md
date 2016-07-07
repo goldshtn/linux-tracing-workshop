@@ -38,7 +38,7 @@ This expands on the [`lockstat` lab](bpf-contention.md) to build a full contenti
 
 * [Tracepoint Example](https://github.com/iovisor/bcc/issues/567) *Short*
 
-Add a simple example of instrumenting a kernel tracepoint based on the new BCC tracepoint support. This should also explain how to use `tplist` to automatically generate the tracepoint structure.
+Add a simple example of instrumenting a kernel tracepoint based on the BCC tracepoint support that will be merged soon. Specifically, the current example doesn't take advantage of automatic tracepoint argument structure generation. (Note that testing this example requires kernel 4.7.)
 
 * [man Page Version Update](https://github.com/iovisor/bcc/issues/569) *Short*
 
