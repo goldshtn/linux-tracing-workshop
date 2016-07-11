@@ -9,16 +9,30 @@ In this lab, you will experiment with some of the task-focused tools from BCC to
 You will need to generate a bunch of data so we can monitor the database while inserting items and while querying them. To do so, use the provided [data_access.py](data_access.py) script. It takes a single command-line argument, which can be either `insert`, `insert_once`, or `select`. But first, we need to make sure MySQL is running:
 
 ```
-# systemctl start mariadb
+# systemctl start mysql
 ```
 
-Now run the insert script using the following command (it will run in an infinite loop):
+Run the MySQL client to create the test database that we will be using:
 
 ```
-$ ./data_access.py insert
+$ mysql --user root
+> create database test;
 ```
 
-In another root shell window, run the following command to get a quick reading at the block I/O operations performed by MySQL while you are inserting rows:
+Open the data_access.py script in an editor (you can use `vim` in the terminal, or the built-in Strigo editor) and modify the following line:
+
+```
+- connection = mysql.connector.connect(host='localhost', database='test')
++ connection = mysql.connector.connect(host='localhost', database='test', user='root')
+```
+
+Now run the insert script in another shell using the following command (it will run in an infinite loop):
+
+```
+$ python data_access.py insert
+```
+
+In another root shell window, run the following command to get a quick reading at the block I/O operations performed by MySQL while you are inserting rows (add **/usr/share/bcc/tools** to the PATH if you haven't do so already):
 
 ```
 # biotop
@@ -42,13 +56,6 @@ OK, so we are seeing some block I/O being submitted. Let's take a look at the ca
 # stackcount -i 10 submit_bio
 ```
 
-From the output, it's clear that there are a lot of fsyncs and a lot of writes, all to XFS. Let's try a couple of dedicated XFS tools next to figure out what's happening there:
-
-```
-# xfsdist 5 1
-# xfsslower
-```
-
 OK, so which files are being touched by mysqld while you're inserting rows? Run the following command to find out:
 
 ```
@@ -68,13 +75,13 @@ Finally, what kind of interrupt load are these disk operations putting on the sy
 You are going to experiment with queries now, so start by running the following command to get 10000 records in the database:
 
 ```
-$ ./data_access.py insert_once
+$ python data_access.py insert_once
 ```
 
 Next, run the following command to perform an infinite stream of queries on the data you just put in the database:
 
 ```
-$ ./data_access.py select
+$ python data_access.py select
 ```
 
 In another root shell window, run a couple of the block I/O statistics commands from the previous task. Do you see any block I/Os being performed? Why do you think that is?
@@ -93,22 +100,3 @@ Now run the select script again. You'll notice that there are some file accesses
 
 - - -
 
-#### Bonus: Monitor MySQL Queries with `trace` and `argdist`
-
-In addition to the generic scripts from the previous sections, we can instrument MySQL more accurately because it uses USDT for static tracing. (Probing USDT is covered in [the next lab](bpf-usdt.md).)
-
-While the insert script is running, execute the following command to trace the insert statements as they occur:
-
-```
-# trace -p $(pidof mysqld) 'u:/usr/libexec/mysqld:query__start "%s", arg1'
-```
-
-You can see that there is a commit statement after every insert statement. Now let's get some statistics over the select script. Run it first, and then the following command to determine how many rows we're getting out of each select:
-
-```
-# argdist -p $(pidof mysqld) -C 'u:/usr/libexec/mysqld:select__done():u64:arg2#rows returned'
-```
-
-You can experiment with additional USDT probe points embedded in MySQL now, or wait for [the USDT lab](bpf-usdt.md). You can find a list of them [here](https://github.com/MariaDB/server/blob/10.1/include/probes_mysql.d.base).
-
-- - -

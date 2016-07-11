@@ -4,6 +4,16 @@ This repository contains examples and hands-on labs for various Linux tracing wo
 
 - - -
 
+#### SRECon Europe 2016
+
+At SRECon Europe 2016, you can use a pre-provisioned Strigo environment, which provisions EC2 instances automatically for you. Follow these instructions to launch your instance:
+
+1. [Log in to Strigo](https://s.sashag.net/sreconbpf) -- the email address you provide is not verified, so you don't have to sign up with your real identity if you don't want to
+1. Enter the classroom token (four characters) provided by the instructor
+1. Navigate to the Lab tab (fourth from the top, the icon that looks like a test tube) to get your EC2 instance started
+
+- - -
+
 #### Prerequisites
 
 1. Linux 4.6+ (the distribution doesn't matter; tested on Ubuntu and Fedora Core)

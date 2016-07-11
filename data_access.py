@@ -32,7 +32,7 @@ def select():
             pass
         cursor.close()
 
-connection = mysql.connector.connect(host='localhost', database='test')
+connection = mysql.connector.connect(host='localhost', database='test', user='root')
 
 if "insert" in sys.argv:
     while True:
