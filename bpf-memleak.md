@@ -31,7 +31,7 @@ Use the following command to run `memleak` and attach to the word count applicat
 By default, `memleak` will print the top 10 stacks sorted by oustanding allocations -- that is, allocations performed and not freed since the tool has attached to your process. Try to analyze these call stacks yourself. Note that the C++ compiler does not make it very easy to understand what's going on because of name mangling -- you can pipe `memleak`'s output through the `c++filt` utility, which should help.
 
 The most obvious source of allocations is in the `word_counter::word_count` method, which calls `std::copy` to read from the input file. It pushes a bunch of strings into a vector using a `std::back_insert_iterator`. However, it's not obvious why these strings aren't being reclaimed when we move to the next file. What's surprising is that the `std::shared_ptr` to the `word_counter` class, allocated in the `main` function, isn't being freed either. For each file processed, we allocate a
-`word_counter` that is not freed. At this point, you should inspect the [wordcount.cc](wordcount.cc) source file carefully and try to determine where the memory leak is coming from.
+`word_counter` that is not freed. At this point, you could inspect the [wordcount.cc](wordcount.cc) source file carefully and try to determine where the memory leak is coming from.
 
 > Hint: `std::shared_ptr`s do not automatically break cyclic references. Two objects referring to each other through a `std::shared_ptr` will not be automatically reclaimed.
 

@@ -9,7 +9,8 @@ In this lab, you will experiment with some of the task-focused tools from BCC to
 You will need to generate a bunch of data so we can monitor the database while inserting items and while querying them. To do so, use the provided [data_access.py](data_access.py) script. It takes a single command-line argument, which can be either `insert`, `insert_once`, or `select`. But first, we need to make sure MySQL is running:
 
 ```
-# systemctl start mariadb
+# systemctl start mariadb   # on Fedora
+# systemctl start mysql     # on Ubuntu
 ```
 
 Now run the insert script using the following command (it will run in an infinite loop):
@@ -42,11 +43,10 @@ OK, so we are seeing some block I/O being submitted. Let's take a look at the ca
 # stackcount -i 10 submit_bio
 ```
 
-From the output, it's clear that there are a lot of fsyncs and a lot of writes, all to XFS. Let's try a couple of dedicated XFS tools next to figure out what's happening there:
+It seems that there are quite a few I/O operations. Let's take a look at some of the slower ones (slower than 1ms):
 
 ```
-# xfsdist 5 1
-# xfsslower
+# fileslower 1
 ```
 
 OK, so which files are being touched by mysqld while you're inserting rows? Run the following command to find out:

@@ -19,6 +19,16 @@ This repository contains examples and hands-on labs for various Linux tracing wo
 
 - - -
 
+#### Strigo Virtual Environment
+
+When this workshop is delivered as instructor-led training, the instructor will provision a Strigo virtual classroom (EC2 instances) for each student. To use the Strigo virtual environment:
+
+1. Log in to Strigo using the link provided by the instructor (you can log in with Google or create a new account, no verification required)
+1. Enter the classroom token (four characters) provided by the instructor to join the classroom
+1. Navigate to the Lab tab (fourth from the top, the icon that looks like a test tube) to get your EC2 instance started
+
+- - -
+
 #### Labs
 
 1. [Probing Tracepoints with ftrace](ftrace.md)

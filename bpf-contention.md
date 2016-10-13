@@ -9,7 +9,8 @@ In this lab, you will experiment with what it takes to write your own BPF-based 
 First, you'll build a multi-threaded application ([parprimes.c](parprimes.c)) that calculates -- guess what -- prime numbers. It does so in multiple threads and uses a mutex, which makes it a good candidate for our purposes. Run the following command to build it:
 
 ```
-$ gcc -g -lpthread parprimes.c -o parprimes
+$ gcc -g -lpthread parprimes.c -o parprimes     # on Fedora
+# gcc -g -pthread parprimes.c -o parprimes      # on Ubuntu
 ```
 
 Try to run it with the following parameters, just to see that it works:
