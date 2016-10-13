@@ -1,6 +1,6 @@
 ### Linux Tracing Workshops Materials
 
-This repository contains examples and hands-on labs for various Linux tracing workshops, focusing on modern tracing tools.  To perform these labs, you will need a Linux box that meets several prerequisites. You can also use a VirtualBox appliance supplied by the instructor.
+This repository contains examples and hands-on labs for various Linux tracing workshops, focusing on modern tracing tools.  To perform these labs, you will need a Linux box that meets several prerequisites. You can also use an EC2 instance supplied by the instructor.
 
 - - -
 
@@ -33,9 +33,13 @@ When this workshop is delivered as instructor-led training, the instructor will 
 
 1. [Probing Tracepoints with ftrace](ftrace.md)
 1. [CPU Sampling with `perf` and Flame Graphs](perf.md)
+1. [Using BPF Tools: Broken File Opens)[bpf-opens.md)
+1. [Using BPF Tools: Slow File I/O)(bpf-files.md)
 1. [Using BPF Tools: Chasing a Memory Leak](bpf-memleak.md)
 1. [Using BPF Tools: Database and Disk Stats and Stacks](bpf-io.md)
 1. [Using BPF Tools: Node and JVM USDT Probes](bpf-usdt.md)
+1. [Writing BPF Tools: `setuidsnoop`](bpf-setuidsnoop.md)
+1. [Writing BPF Tools: `dbslower`](bpf-dbslower.md)
 1. [Writing BPF Tools: Contention Stats and Stacks](bpf-contention.md)
 1. [Writing BPF Tools: From BCC GitHub Issues](bpf-issues.md)
 
