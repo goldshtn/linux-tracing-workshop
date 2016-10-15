@@ -33,8 +33,8 @@ When this workshop is delivered as instructor-led training, the instructor will 
 
 1. [Probing Tracepoints with ftrace](ftrace.md)
 1. [CPU Sampling with `perf` and Flame Graphs](perf.md)
-1. [Using BPF Tools: Broken File Opens)[bpf-opens.md)
-1. [Using BPF Tools: Slow File I/O)(bpf-files.md)
+1. [Using BPF Tools: Broken File Opens](bpf-opens.md)
+1. [Using BPF Tools: Slow File I/O](bpf-files.md)
 1. [Using BPF Tools: Chasing a Memory Leak](bpf-memleak.md)
 1. [Using BPF Tools: Database and Disk Stats and Stacks](bpf-io.md)
 1. [Using BPF Tools: Node and JVM USDT Probes](bpf-usdt.md)
