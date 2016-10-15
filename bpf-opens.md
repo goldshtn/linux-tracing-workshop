@@ -18,7 +18,13 @@ Now, run `./server`. It should print a message saying that it's starting up, but
 
 #### Task 2: Perform Basic Diagnostics
 
-Because the application process seems to be stuck, let's try to see what it's doing. Run `top` -- you should see the app near the top of the output, consuming some CPU. Next, run `pidstat -u -p $(pidof server) 1` to see a report of the process' user and system CPU utilization every second. It looks like the process is spending a bit of time in kernel mode.
+Because the application process seems to be stuck, let's try to see what it's doing. Run `top` -- you should see the app near the top of the output, consuming some CPU. Next, run the following command to see a report of the process' user and system CPU utilization every second: 
+
+```
+$ pidstat -u -p $(pidof server) 1
+```
+
+It looks like the process is spending a bit of time in kernel mode.
 
 - - -
 

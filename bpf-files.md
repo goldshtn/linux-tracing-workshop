@@ -19,9 +19,19 @@ Next, run `./logger` -- it sits quietly in the background and churns some log fi
 
 #### Task 2: Collect I/O Latency Information
 
-For the sake of simplicity, assume you were already told that the `logger` application exhibits occasionally latency. You suspect that this is a result of slow I/O operations. Run `biolatency 1` (a BCC tool) to get a distribution of block I/O operation latency across the system.
+For the sake of simplicity, assume you were already told that the `logger` application exhibits occasionally latency. You suspect that this is a result of slow I/O operations. Run the following command to get a distribution of block I/O operation latency across the system:
 
-The result is likely a bimodal distribution. A lot of the operations complete very quickly, but there are some outliers that take a bit longer. Next, run `biosnoop` (another BCC tool) to see the actual I/O operations and their latencies. You should be able to quickly see that there are some fairly large I/Os performed by the `logger` application that take longer than other smaller I/Os.
+```
+# biolatency 1
+```
+
+The result is likely a bimodal distribution. A lot of the operations complete very quickly, but there are some outliers that take a bit longer. Next, run the following command to see the actual I/O operations and their latencies:
+
+```
+# biosnoop
+```
+
+You should be able to quickly see that there are some fairly large I/Os performed by the `logger` application that take longer than other smaller I/Os.
 
 - - -
 
