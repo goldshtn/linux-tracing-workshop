@@ -163,9 +163,9 @@ int probe_end(struct pt_regs *ctx) {
 }
 ```
 
-> Note: There are two ways to address the threshold requirement. One option is filter queries faster than the threshold in the C part of the program (loaded into the kernel), and the other is to pass all queries and their duration to the Python script in user space and do the filtering there. What do you think is the better option?
+> NOTE: There are two ways to address the threshold requirement. One option is filter queries faster than the threshold in the C part of the program (loaded into the kernel), and the other is to pass all queries and their duration to the Python script in user space and do the filtering there. What do you think is the better option?
 
-Test the final result by running `dbslower {mysql,postgres} 0` to see all queries. Then, use a larger threshold and attempt to run slower queries, e.g. by inserting a large number of values into some temporary table.
+Test the final result by running `./dbslower.py {mysql,postgres} 0` to see all queries. Then, use a larger threshold and attempt to run slower queries, e.g. by inserting a large number of values into some temporary table.
 
 - - -
 
