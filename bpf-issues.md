@@ -8,17 +8,11 @@ Each task has a rough time estimate attached to it, where:
 * Medium means the task requires some design and planning, and will probably take a couple of days to complete.
 * Open-Ended means the task requires design, planning, collaboration, and a lot of development work, and will probably take more than a few days to complete.
 
+> NOTE: This list was last updated in October 2016. Some of the tasks below could be closed or addressed already. Please make sure to ask before starting to work on any of them, especially if you are reading this more than a month or two after the last update.
+
 - - -
 
 #### Tool Development Tasks
-
-* [Min and Max Thresholds in `offcputime`](https://github.com/iovisor/bcc/issues/588) *Short*
-
-Add min and max thresholds to let the user choose the latency range for off-CPU events, e.g. to diagnose a specific latency problem.
-
-* [Generalize `stackcount`](https://github.com/iovisor/bcc/issues/580) *Medium*
-
-Make `stackcount` support user-mode functions, tracepoints, and USDT probes in addition to kernel functions, which it currently supports.
 
 * [Differentiate pids and tids](https://github.com/iovisor/bcc/issues/547) *Medium*
 
@@ -32,13 +26,29 @@ There are still a couple of tools remaining that print to the trace pipe, which 
 
 This expands on the [`lockstat` lab](bpf-contention.md) to build a full contention monitoring tool with wait graph support.
 
+* [Allow wildcards or regexes in `trace` probe specifiers](https://github.com/iovisor/bcc/issues/746) *Medium*
+
+There are some tools like `stackcount` and `funclatency` that support multiple functions at once by having a wildcard or regex specifier. This can be useful for `trace` as well, e.g. `trace t:block:*` or `trace u:pthread:*mutex*`.
+
+* [Clean up linter issues](https://github.com/iovisor/bcc/issues/745) *Medium*
+
+The tool contribution guidelines require running pep8 and fixing style issues. There are some tools that got a bit neglected over time and have some issues that pep8 detects.
+
+* [Replace `stacksnoop` with `trace -KU`](https://github.com/iovisor/bcc/issues/737) *Short*
+
+Essentially, once stack tracing was introduced in `trace`, there's no longer need for `stacksnoop`. To retain compatibility and discoverability, we can turn `stacksnoop` into a wrapper that invokes `trace` with the appropriate flags.
+
+* [uprobe/tracepoint/USDT support in `funccount`](https://github.com/iovisor/bcc/issues/731) *Medium*
+
+This can be very useful for quickly discovering the rate of things happening in the system. Most of the code should be salvageable from `stackcount`'s recent update.
+
+* [More options in `opensnoop`](https://github.com/iovisor/bcc/issues/616) *Medium*
+
+Bring `opensnoop` up to par with an older version that uses ftrace.
+
 - - -
 
 #### Documentation Tasks
-
-* [Tracepoint Example](https://github.com/iovisor/bcc/issues/567) *Short*
-
-Add a simple example of instrumenting a kernel tracepoint based on the BCC tracepoint support that will be merged soon. Specifically, the current example doesn't take advantage of automatic tracepoint argument structure generation. (Note that testing this example requires kernel 4.7.)
 
 * [man Page Version Update](https://github.com/iovisor/bcc/issues/569) *Short*
 
@@ -48,14 +58,6 @@ Update the tools' man pages to reflect which minimum kernel version is required 
 
 Add a collection of links, presentations, blog posts and so on referencing the core BCC project.
 
-* [Reference Guide](https://github.com/iovisor/bcc/issues/465) *Medium*
-
-Add a reference guide that documents the `BPF` module and its sub-modules.
-
-* [Kernel Requirements](https://github.com/iovisor/bcc/issues/464) *Short*
-
-Which kernel build flags are required to use the BPF-based tools? Which kernel version supports which features, for which tools?
-
 * Testing on a New Distribution *Medium*
 
 Find a distribution that isn't covered by the installation requirements, and see if you can get BCC to compile from source on that platform. Document your findings as a PR to the [INSTALL.md](https://github.com/iovisor/bcc/blob/master/INSTALL.md) file or as a separate file linked from INSTALL.md.
@@ -64,16 +66,9 @@ Find a distribution that isn't covered by the installation requirements, and see
 
 #### Core Development Tasks
 
-* [Executable File Path Resolution](https://github.com/iovisor/bcc/issues/565) *Short*
-
-Update BCC to allow tools like `trace` and `argdist` to specify an executable name which is in the PATH and get it resolved automatically.
-
 * [Higher-Level Language Support](https://github.com/iovisor/bcc/issues/425) *Open-Ended*
 
 Explore building a higher-level language (such as DTrace's language) for expressing BPF probes.
 
-* [Regex Support For UProbes](https://github.com/iovisor/bcc/issues/389) *Short*
-
-Allow using a regular expression for the function name when using `attach_uprobe`.
-
 - - -
+
