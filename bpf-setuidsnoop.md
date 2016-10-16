@@ -20,7 +20,7 @@ For lack of a dedicated tool, we can use the general-purpose `trace` multitool t
 
 ```
 # trace 'sys_setuid "uid=0x%x", arg1' 'r::sys_setuid "rc=%d", retval'
-``
+```
 
 In a separate shell, run `sudo su` or a similar command, and note the trace printouts when `setuid` is called.`
 
@@ -30,7 +30,7 @@ In a separate shell, run `sudo su` or a similar command, and note the trace prin
 
 A dedicated tool can be better than the trace printouts. For one thing, it would consolidate the `setuid` argument and return code, much like `killsnoop` does. Copy `killsnoop.py` to `setuidsnoop.py` and make the following changes:
 
-* Attach the kprobe and kretprobe to `sys_setuid` instead of `sys_kill
+* Attach the kprobe and kretprobe to `sys_setuid` instead of `sys_kill`
 * Modify the signature of the kprobe function to match `sys_setuid`
 * Modify the data structure to include the uid instead of the kill arguments (both the C and Python structures need to be modified)
 * Populate the data structure accordingly in the kprobe and kretprobe functions
