@@ -34,7 +34,7 @@ $ tplist -p $(pidof node)
 You should now see USDT probes from libc and libstdcxx as well. You can also ask `tplist` to print out more details about each probe. For example, here are the arguments for the `node:http__server_request` probe as reported by `tplist`:
 
 ```
-$ tplist -l node -v '*server__request'
+$ tplist -l node -vv '*server__request'
 /home/vagrant/node/out/Release/node node:http__server__request [sema 0x1606c34]
   location 0xef4854 raw args: 8@%r14 8@%rax 8@-4328(%rbp) -4@-4332(%rbp) 8@-4288(%rbp) 8@-4296(%rbp) -4@-4336(%rbp)
     8 unsigned bytes @ register %r14
