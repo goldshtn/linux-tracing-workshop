@@ -16,7 +16,7 @@ Now, experiment with multiple executions of this application with varying number
 
 ```
 $ for i in `seq 1 2 16`; do
->   OMP_NUM_THREADS=$i time ./primes
+>   OMP_NUM_THREADS=$i bash -c 'time ./primes'
 > done
 ```
 
