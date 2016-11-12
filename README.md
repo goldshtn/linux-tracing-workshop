@@ -18,6 +18,8 @@ This repository contains examples and hands-on labs for various Linux tracing wo
 1. PostgreSQL built from [source](https://github.com/postgres/postgres) with `configure --enable-dtrace`
 1. [MySQL Python Connector](https://dev.mysql.com/doc/connector-python/en/connector-python-installation.html)
 
+If you're using Fedora 23+, try the experimental [setup script](setup-fedora.sh), which can fetch you a recent kernel from mainline and install all the packages and tools you need for this workshop. Use at your own risk!
+
 - - -
 
 #### Strigo Virtual Environment
