@@ -35,6 +35,9 @@ The result is likely a bimodal distribution. A lot of the operations complete ve
 
 You should be able to quickly see that there are some fairly large I/Os performed by the `logger` application that take longer than other smaller I/Os.
 
+Note: If you use an encrypted filesystem, you may see the I/Os requests as occuring on behalf
+of dmcrypt. This is a current limitation of `biosnoop`.
+
 - - -
 
 #### Task 3: Observe Slow File I/O Operations
