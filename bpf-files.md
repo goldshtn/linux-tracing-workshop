@@ -21,7 +21,7 @@ Note: Although specifying "-fno-omit-frame-pointer" is edundant when optimizatio
 
 #### Task 2: Collect I/O Latency Information
 
-For the sake of simplicity, assume you were already told that the `logger` application exhibits occasionally latency. You suspect that this is a result of slow I/O operations. Run the following command to get a distribution of block I/O operation latency across the system:
+For the sake of simplicity, assume you were already told that the `logger` application occasionally exhibits latency. You suspect that this is a result of slow I/O operations. Run the following command to get a distribution of block I/O operation latency across the system:
 
 ```
 # biolatency 1
