@@ -66,9 +66,9 @@ The `argdist` tool from BCC can be used for quick argument analysis when you're 
 # argdist -p $(pidof server) -H 'p::SyS_nanosleep(struct timespec *time):u64:time->tv_nsec'
 ```
 
-This prints a histogram of the sleep durations, which seem to be concentrated in one specific bin: 512-1023 ns. Indeed, inspecting the application source code you can verify that it calls `usleep(1)`, which corresponds to 1000 nanoseconds.
+This prints a histogram (using -H) of the sleep durations, which seem to be concentrated in one specific bin: 512-1023 ns. Indeed, inspecting the application source code you can verify that it calls `usleep(1)`, which corresponds to 1000 nanoseconds.
 
-Similarly, we could use `argdist` to get a frequency count of which files the application is trying to open:
+Similarly, we could use `argdist` to get a frequency count (using -C) of which files the application is trying to open:
 
 ```
 # argdist -p $(pidof server) -C 'p:c:open(char *filename):char*:filename'
