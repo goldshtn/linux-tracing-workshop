@@ -9,7 +9,7 @@ In this lab, you will experiment with a C++ application that leaks memory over t
 First, build the [wordcount](wordcount.cc) application using the following command:
 
 ```
-$ c++ -fno-omit-frame-pointer -std=c++11 -g wordcount.cc -o wordcount
+$ g++ -fno-omit-frame-pointer -std=c++11 -g wordcount.cc -o wordcount
 ```
 
 Run the application. It prompts you for a file name and will display a word count if you provide a valid file name. For example, try the application source file, wordcount.cc. But that's not very interesting. Download one or two books from [Project Gutenberg](http://www.gutenberg.org) -- we like Jane Austen's "Pride and Prejudice", but that's totally up to you. Try giving these as input to the application.
