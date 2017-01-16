@@ -15,6 +15,8 @@ $ gcc -g -fno-omit-frame-pointer -O0 -lpthread logger.c -o logger   # on FC
 
 Next, run `./logger` -- it sits quietly in the background and churns some log files.
 
+Note: Although specifying "-fno-omit-frame-pointer" is edundant when optimizations are turned off, it's a good habit to compile with "-fno-omit-frame-pointer" whenever you're going to use tracing tools.
+
 - - -
 
 #### Task 2: Collect I/O Latency Information
