@@ -38,10 +38,6 @@ The tool contribution guidelines require running pep8 and fixing style issues. T
 
 Essentially, once stack tracing was introduced in `trace`, there's no longer need for `stacksnoop`. To retain compatibility and discoverability, we can turn `stacksnoop` into a wrapper that invokes `trace` with the appropriate flags.
 
-* [uprobe/tracepoint/USDT support in `funccount`](https://github.com/iovisor/bcc/issues/731) *Medium*
-
-This can be very useful for quickly discovering the rate of things happening in the system. Most of the code should be salvageable from `stackcount`'s recent update.
-
 * [More options in `opensnoop`](https://github.com/iovisor/bcc/issues/616) *Medium*
 
 Bring `opensnoop` up to par with an older version that uses ftrace.
