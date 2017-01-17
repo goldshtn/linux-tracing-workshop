@@ -33,9 +33,9 @@ It's time to find out what's taking so long to count our primes. Use the followi
 # perf record -g -F 997 -- ./primes
 ```
 
-> In the preceding command, the -g switch indicates that you want the call stack to be captured; the -F switch lets you set the rate of sampling for events -- 997 times times per second in this case.
-> The trace will include events aggregated across all threads spawned by `primes`. To include events from other system-wide processes while the program is running, specify `-a`, and if you really want
-> to trace only a single thread within a process group, you can use use `-t`.
+> In the preceding command, the `-g` switch indicates that you want the call stack to be captured; the `-F` switch lets you set the rate of sampling for events -- 997 times times per second in this case.
+> The trace will include events aggregated across all threads spawned by `primes`. To include events from other processes while the program is running, specify `-a`, and if you really want
+> to trace only a single thread within a process, you can use use `-t`.
 
 To figure out where the bottleneck is, inspect `perf`'s report:
 
@@ -107,4 +107,3 @@ For some more fun, experiment with collecting CPU samples and then generating fl
 1. `dd if=/dev/zero of=/dev/null bs=100K count=50K`
 
 You might get a lot of `[unknown]` frames because of missing debuginfo. Try to obtain debuginfo for the missing components and then try again. If there's no choice, you can always build from source with the `-g` option to make sure debuginfo will be available.
-
