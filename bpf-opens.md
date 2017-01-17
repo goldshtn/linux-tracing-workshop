@@ -30,7 +30,7 @@ It looks like the process is spending a bit of time in kernel mode.
 
 #### Task 3: Snoop Syscalls
 
-If the process is running frequently in kernel mode, it must be making quite a bunch of syscalls. [BCC] now has the [ucalls](https://github.com/iovisor/bcc/blob/master/tools/ucalls_example.txt) tool which can trace syscalls (and more), but we're going to stick with `perf` for now (you're encouraged to repeat this exercise using `ucalls`):
+If the process is running frequently in kernel mode, it must be making quite a bunch of syscalls. BCC now has the [ucalls](https://github.com/iovisor/bcc/blob/master/tools/ucalls_example.txt) tool which can trace syscalls (and more), but we're going to stick with `perf` for now (you're encouraged to repeat this exercise using `ucalls`):
 
 ```
 # perf record -p $(pidof server) -e 'syscalls:sys_enter_*'
@@ -81,4 +81,3 @@ And similarly, we could get a frequency count of return values from `open()`:
 ```
 
 - - -
-
