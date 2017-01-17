@@ -30,10 +30,12 @@ It's time to find out what's taking so long to count our primes. Use the followi
 
 ```
 # export OMP_NUM_THREADS=16
-# perf record -ag -F 997 -- ./primes
+# perf record -g -F 997 -- ./primes
 ```
 
-> In the preceding command, the -a switch indicates that you want to capture samples on all CPUs; the -g switch indicates that you want the call stack to be captured; the -F switch indicates that your event of interest is CPU samples; and the number 997 is the rate of sampling -- 997 times per second.
+> In the preceding command, the -g switch indicates that you want the call stack to be captured; the -F switch lets you set the rate of sampling for events -- 997 times times per second in this case.
+> The trace will include events aggregated across all threads spawned by `primes`. To include events from other system-wide processes while the program is running, specify `-a`, and if you really want
+> to trace only a single thread within a process group, you can use use `-t`.
 
 To figure out where the bottleneck is, inspect `perf`'s report:
 

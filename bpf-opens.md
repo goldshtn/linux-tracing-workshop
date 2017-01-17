@@ -30,7 +30,7 @@ It looks like the process is spending a bit of time in kernel mode.
 
 #### Task 3: Snoop Syscalls
 
-If the process is running frequently in kernel mode, it must be making quite a bunch of syscalls. At the time of writing, BCC does not have a dedicated tool for snooping syscall statistics (but that would definitely make [a nice pull request!](https://github.com/iovisor/bcc)), so we're going to use `perf`:
+If the process is running frequently in kernel mode, it must be making quite a bunch of syscalls. [BCC] now has the [ucalls](https://github.com/iovisor/bcc/blob/master/tools/ucalls_example.txt) tool which can trace syscalls (and more), but we're going to stick with `perf` for now (you're encouraged to repeat this exercise using `ucalls`):
 
 ```
 # perf record -p $(pidof server) -e 'syscalls:sys_enter_*'
@@ -66,9 +66,9 @@ The `argdist` tool from BCC can be used for quick argument analysis when you're 
 # argdist -p $(pidof server) -H 'p::SyS_nanosleep(struct timespec *time):u64:time->tv_nsec'
 ```
 
-This prints a histogram of the sleep durations, which seem to be concentrated in one specific bin: 512-1023 ns. Indeed, inspecting the application source code you can verify that it calls `usleep(1)`, which corresponds to 1000 nanoseconds.
+This prints a histogram (using -H) of the sleep durations, which seem to be concentrated in one specific bin: 512-1023 ns. Indeed, inspecting the application source code you can verify that it calls `usleep(1)`, which corresponds to 1000 nanoseconds.
 
-Similarly, we could use `argdist` to get a frequency count of which files the application is trying to open:
+Similarly, we could use `argdist` to get a frequency count (using -C) of which files the application is trying to open:
 
 ```
 # argdist -p $(pidof server) -C 'p:c:open(char *filename):char*:filename'

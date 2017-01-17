@@ -15,11 +15,13 @@ $ gcc -g -fno-omit-frame-pointer -O0 -lpthread logger.c -o logger   # on FC
 
 Next, run `./logger` -- it sits quietly in the background and churns some log files.
 
+Note: Although specifying "-fno-omit-frame-pointer" is edundant when optimizations are turned off, it's a good habit to compile with "-fno-omit-frame-pointer" whenever you're going to use tracing tools.
+
 - - -
 
 #### Task 2: Collect I/O Latency Information
 
-For the sake of simplicity, assume you were already told that the `logger` application exhibits occasionally latency. You suspect that this is a result of slow I/O operations. Run the following command to get a distribution of block I/O operation latency across the system:
+For the sake of simplicity, assume you were already told that the `logger` application occasionally exhibits latency. You suspect that this is a result of slow I/O operations. Run the following command to get a distribution of block I/O operation latency across the system:
 
 ```
 # biolatency 1
@@ -32,6 +34,9 @@ The result is likely a bimodal distribution. A lot of the operations complete ve
 ```
 
 You should be able to quickly see that there are some fairly large I/Os performed by the `logger` application that take longer than other smaller I/Os.
+
+Note: If you use an encrypted filesystem, you may see the I/Os requests as occuring on behalf
+of dmcrypt. This is a current limitation of `biosnoop`.
 
 - - -
 
