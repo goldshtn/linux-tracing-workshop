@@ -48,5 +48,5 @@ When this workshop is delivered as instructor-led training, the instructor will 
 
 - - -
 
-(C) Sasha Goldshtein, 2015-2016. All rights reserved.
+(C) Sasha Goldshtein, 2015-2017. All rights reserved.
 
