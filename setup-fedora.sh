@@ -51,7 +51,7 @@ if [[ "$majver" -eq "4" && "$minver" -lt "6" ]]
     then upgrade_kernel
 fi
 
-### Install perf and kernel headers from vanilla repo (?) -- TODO
+### Install perf and kernel headers from vanilla repo
 echo "Installing perf and kernel headers..."
 sudo dnf --enablerepo=kernel-vanilla-mainline install -y perf
 sudo dnf --enablerepo=kernel-vanilla-mainline --best --allowerasing \
@@ -160,7 +160,7 @@ sudo chgrp -R mysql .
 sudo scripts/mysql_install_db --user=mysql
 sudo chown -R root .
 sudo chown -R mysql data
-echo "To start MySQL, run '/usr/local/mysql/bin/mysqld_safe --user=mysql &'"
+echo "To start MySQL, run 'sudo /usr/local/mysql/bin/mysqld_safe --user=mysql &'"
 popd
 
 ### Setting environment variables
