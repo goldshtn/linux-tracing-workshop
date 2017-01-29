@@ -3,6 +3,7 @@ JAVAEXTFLAGS=-XX:+ExtendedDTraceProbes
 
 build:
 		mkdir -p bin
+		cp mysql-connector-java-5.1.40-bin.jar bin/
 		javac *.java -d bin
 
 clean:
