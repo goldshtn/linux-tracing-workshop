@@ -10,6 +10,7 @@ This repository contains examples and hands-on labs for various Linux tracing wo
 1. [perf](https://perf.wiki.kernel.org/index.php/Main_Page)
 1. [perf-map-agent](https://github.com/jrudolph/perf-map-agent)
 1. [FlameGraph](https://github.com/brendangregg/FlameGraph)
+1. [perf-tools](https://github.com/brendangregg/perf-tools)
 1. [bcc](https://github.com/iovisor/bcc/blob/master/INSTALL.md)
 1. [OpenJDK](http://openjdk.java.net)
 1. The **systemtap-sdt-dev** package on Ubuntu or the **systemtap-sdt-devel** package on Fedora/RHEL
@@ -45,6 +46,7 @@ When this workshop is delivered as instructor-led training, the instructor will 
 1. [Writing BPF Tools: `dbslower`](bpf-dbslower.md)
 1. [Writing BPF Tools: Contention Stats and Stacks](bpf-contention.md)
 1. [Writing BPF Tools: From BCC GitHub Issues](bpf-issues.md)
+1. [Using `perf` Tools: Broken File Opens](perf-opens.md)
 
 - - -
 

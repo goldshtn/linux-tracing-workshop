@@ -75,6 +75,7 @@ git clone --depth=1 https://github.com/nodejs/node
 git clone --depth=1 https://github.com/postgres/postgres
 git clone --depth=1 https://github.com/MariaDB/server mariadb
 git clone --depth=1 https://github.com/jrudolph/perf-map-agent
+git clone --depth=1 https://github.com/brendangregg/perf-tools
 
 ### Install prerequisites for building BCC
 echo "Installing build tools..."
@@ -102,6 +103,11 @@ make -j $NUMPROCS
 echo "Installing into /usr/share/bcc..."
 sudo make install
 popd
+
+### Put perf-tools in /usr
+echo "Installing perf-tools into /usr/share/perf-tools..."
+sudo mkdir -p /usr/share/perf-tools
+sudo cp -R ./perf-tools/bin /usr/share/perf-tools
 
 ### Install OpenJDK
 echo "Installing OpenJDK..."
@@ -166,7 +172,7 @@ popd
 ### Setting environment variables
 echo "Setting environment variables for PATH and MANPATH..."
 sudo bash -c 'cat >> /etc/profile << \EOF
-  PATH=$PATH:/usr/share/bcc/tools
+  PATH=$PATH:/usr/share/bcc/tools:/usr/share/perf-tools
   MANPATH=$MANPATH:/usr/share/bcc/man/man8
 EOF'
 
