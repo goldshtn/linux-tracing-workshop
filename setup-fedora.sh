@@ -160,7 +160,7 @@ sudo chgrp -R mysql .
 sudo scripts/mysql_install_db --user=mysql
 sudo chown -R root .
 sudo chown -R mysql data
-echo "To start MySQL, run 'sudo /usr/local/mysql/bin/mysqld_safe --user=mysql &'"
+echo "To start MySQL, run 'sudo -u mysql /usr/local/mysql/bin/mysqld_safe --user=mysql &'"
 popd
 
 ### Setting environment variables
