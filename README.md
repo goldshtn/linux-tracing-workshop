@@ -48,6 +48,7 @@ When this workshop is delivered as instructor-led training, the instructor will 
 1. [Writing BPF Tools: From BCC GitHub Issues](bpf-issues.md)
 1. [Using `perf` Tools: Broken File Opens](perf-opens.md)
 1. [Using BPF Tools: `trace` and `argdist` One-Liners](bpf-oneliners.md)
+1. [Using BPF Tools: CPU and Off-CPU Investigation](bpf-cpu.md)
 
 - - -
 
