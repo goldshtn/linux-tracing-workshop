@@ -10,7 +10,7 @@ First, you'll build a multi-threaded application ([parprimes.c](parprimes.c)) th
 
 ```
 $ gcc -g -fno-omit-frame-pointer -lpthread parprimes.c -o parprimes     # on Fedora
-# gcc -g -fno-omit-frame-pointer -pthread  parprimes.c -o parprimes     # on Ubuntu
+$ gcc -g -fno-omit-frame-pointer -pthread  parprimes.c -o parprimes     # on Ubuntu
 ```
 
 Try to run it with the following parameters, just to see that it works:
