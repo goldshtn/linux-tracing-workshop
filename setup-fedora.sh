@@ -26,6 +26,10 @@ function upgrade_kernel {
     fi
 }
 
+### Make sure curl is installed, we need it very early on:
+echo "Installing curl..."
+sudo dnf install -y curl
+
 ### Check BPF kernel config flags
 echo "Checking BPF config flags..."
 for flag in CONFIG_BPF CONFIG_BPF_SYSCALL CONFIG_BPF_JIT CONFIG_BPF_EVENTS; do
@@ -60,6 +64,10 @@ sudo dnf --enablerepo=kernel-vanilla-mainline --best --allowerasing \
 ### Install basics
 echo "Installing basics..."
 sudo dnf install -y wget git vim ncurses-devel sysstat
+
+### Install debuginfo
+echo "Installing glibc debuginfo..."
+sudo dnf debuginfo-install glibc
 
 ### Create root directory for all the tools
 INSTALL_ROOT=~/tracing-workshop
