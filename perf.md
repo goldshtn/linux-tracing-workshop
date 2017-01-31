@@ -9,7 +9,7 @@ In this lab, you will experiment with CPU profiling of a simple application. The
 The application you're about to profile is a very simple command-line tool that counts prime numbers in a given range, and uses [OpenMP](http://www.openmp.org) to parallelize the computation. But first, let's build it and make sure everything works. Navigate to the directory that contains [primes.c](primes.c) and build it using the following command:
 
 ```
-$ gcc -g -fopenmp primes.c -o primes
+$ gcc -g -fno-omit-frame-pointer -fopenmp primes.c -o primes
 ```
 
 Now, experiment with multiple executions of this application with varying numbers of threads:
