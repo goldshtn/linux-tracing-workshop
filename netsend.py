@@ -19,18 +19,9 @@ struct key_t {
 BPF_HISTOGRAM(dist, struct key_t);
 
 TRACEPOINT_PROBE(net, net_dev_start_xmit) {
-    void *skbaddr = args->skbaddr;
-    if (skbaddr == NULL)
-        return 0;
-
-    struct sk_buff *skb = skbaddr;
-    struct net_device *dev;
-    bpf_probe_read(&dev, sizeof(dev), &skb->dev);
-    if (dev == NULL)
-        return 0;
-
     struct key_t key = {0};
-    bpf_probe_read(&key.devname, sizeof(key.devname), dev->name);
+
+    TP_DATA_LOC_READ_CONST(&key.devname, name, 16);
     key.slot = bpf_log2l(args->len);
     dist.increment(key);
 
