@@ -44,4 +44,7 @@ databaseyext: build
 servery: build
 		java $(JAVAFLAGS) -cp bin Servery
 
+writey: build
+		java $(JAVAFLAGS) -cp bin Writey
+
 all: build
