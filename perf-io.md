@@ -128,6 +128,7 @@ Tracing block I/O size (bytes), until Ctrl-C...
           8.0 -> 63.9      : 0        |                                      |
          64.0 -> 127.9     : 0        |                                      |
         128.0 ->           : 19       |##########                            |
+^C
 ```
 
 From these results, it looks like there are a lot of small I/Os, between 1 and 8 kilobytes in size, but there is also a non-negligible number of I/Os that are larger than 128KB, which isn't very small. In the next section, we will discover where these I/Os are coming from in the application's code.
