@@ -10,13 +10,17 @@
 #define LARGE_WRITE 1048576
 #define SMALL_WRITE 1024
 
+void do_write(int fd, char *buf, int count) {
+    write(fd, buf, count);
+}
+
 void write_flushed_data() {
     int fd;
     char *buf;
     buf = malloc(LARGE_WRITE);
     strcpy(buf, "Large data buffer follows.\n");
     fd = open("flush.data", O_CREAT | O_WRONLY | O_SYNC, 0644);
-    write(fd, buf, LARGE_WRITE);
+    do_write(fd, buf, LARGE_WRITE);
     close(fd);
     free(buf);
 }
@@ -37,7 +41,7 @@ void logger() {
     fd = open("log.data", O_CREAT | O_WRONLY | O_SYNC, 0644);
     while (1) {
         usleep(20000);
-        write(fd, buf, SMALL_WRITE);
+        do_write(fd, buf, SMALL_WRITE);
     }
     close(fd);
     free(buf);
