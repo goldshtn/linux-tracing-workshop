@@ -2,9 +2,9 @@
 #
 # Configure a lab environment for Linux tracing workshop, with exercises
 # using perf, flame graphs, and the BPF tool collection. Requires a system
-# with Fedora 23/24/25, and a recent Linux kernel (4.6+).
+# with Fedora 24/25, and a recent Linux kernel (4.6+).
 #
-# Copyright: Sasha Goldshtein, 2016
+# Copyright: Sasha Goldshtein, 2017
 #
 # Distributed under the MIT license (see the LICENSE file in this directory).
 
@@ -40,8 +40,8 @@ done
 
 ### Check for supported Fedora versions
 echo "Checking if this version of Linux is supported..."
-(uname -r | grep "fc2[345]" -q) || \
-    die "Unsupported Linux version, only Fedora 23/24/25 is currently supported"
+(uname -r | grep "fc2[45]" -q) || \
+    die "Unsupported Linux version, only Fedora 24/25 is currently supported"
 
 ### Check for kernel version
 echo "Checking if this version of the kernel is supported..."
@@ -63,11 +63,12 @@ sudo dnf --enablerepo=kernel-vanilla-mainline --best --allowerasing \
 
 ### Install basics
 echo "Installing basics..."
-sudo dnf install -y wget git vim ncurses-devel sysstat
+sudo dnf install -y wget git ncurses-devel sysstat
+sudo dnf install -y vim
 
-### Install debuginfo
+### Install glibc debuginfo
 echo "Installing glibc debuginfo..."
-sudo dnf debuginfo-install glibc
+sudo dnf debuginfo-install -y glibc
 
 ### Create root directory for all the tools
 INSTALL_ROOT=~/tracing-workshop
@@ -91,15 +92,9 @@ sudo dnf install -y systemtap-sdt-devel
 sudo dnf install -y bison cmake ethtool flex git iperf libstdc++-static \
   python-netaddr python-pip gcc gcc-c++ make zlib-devel \
   elfutils-libelf-devel
+sudo dnf install -y clang clang-devel llvm llvm-devel llvm-static
 sudo dnf install -y luajit luajit-devel
 sudo pip install pyroute2
-
-### Download binary Clang (this works on FC23 and FC24)
-echo "Downloading and extracting binary Clang distribution..."
-CLANG_ARCHIVE=clang+llvm-3.9.0-x86_64-fedora23.tar.xz
-wget http://llvm.org/releases/3.9.0/$CLANG_ARCHIVE
-sudo tar xf $CLANG_ARCHIVE -C /usr/local --strip 1
-rm $CLANG_ARCHIVE
 
 NUMPROCS=$(nproc --all)
 
@@ -120,6 +115,8 @@ sudo cp -R ./perf-tools/bin /usr/share/perf-tools
 ### Install OpenJDK
 echo "Installing OpenJDK..."
 sudo dnf install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel
+echo "Installing OpenJDK debuginfo..."
+sudo dnf debuginfo-install -y java-1.8.0-openjdk
 
 ### Building perf-map-agent
 echo "Building perf-map-agent..."
