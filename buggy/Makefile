@@ -18,12 +18,12 @@ allocyext: build
 clientygood: build
 		sudo pip install dnslib
 		sudo ./proxy.py > /dev/null &
-		java -cp bin Clienty good
+		java $(JAVAFLAGS) -cp bin Clienty good
 
 clientybad: build
 		sudo pip install dnslib
 		sudo ./proxy.py > /dev/null &
-		java -cp bin Clienty bad
+		java $(JAVAFLAGS) -cp bin Clienty bad
 
 collecty: build
 		java $(JAVAFLAGS) $(JAVAEXTFLAGS) -cp bin Collecty
