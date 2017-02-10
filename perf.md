@@ -90,7 +90,7 @@ Do not hit ENTER yet. Instead, in another (non-root) shell, run `jps` to find th
 ```
 $ jps
 2144 Jps
-2132 Slowy
+2132 App
 $ ./perf-java-report-stack 2132   # use the pid from the previous step
                                   # hit ENTER in the java console
 ```
