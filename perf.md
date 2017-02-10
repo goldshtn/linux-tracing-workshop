@@ -12,12 +12,12 @@ The application you're about to profile is a very simple command-line tool that 
 $ gcc -g -fno-omit-frame-pointer -fopenmp primes.c -o primes
 ```
 
-Now, experiment with multiple executions of this application with varying numbers of threads:
+Now, experiment with multiple executions of this application with varying numbers of threads by running the following command:
 
 ```
-$ for i in `seq 1 2 16`; do
->   OMP_NUM_THREADS=$i bash -c 'time ./primes'
-> done
+for i in `seq 1 2 16`; do \
+  OMP_NUM_THREADS=$i bash -c 'time ./primes'; \
+done
 ```
 
 Elapsed time should stabilize when you create enough threads to keep all the cores saturated throughout the entire run. Because the distribution of work between threads is not ideal, on an N-core system you will need more than N threads to keep them all busy.
