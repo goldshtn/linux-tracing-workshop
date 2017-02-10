@@ -95,7 +95,7 @@ $ ./perf-java-report-stack 2132   # use the pid from the previous step
                                   # hit ENTER in the java console
 ```
 
-If everything went well, you should see the `perf report` ncurses UI, showing the bottlenecks in the Java program. These will likely be `Slowy::main` and `Slowy:isPrime`, because the smaller methods were optimized away (inlined). You can repeat the experiment and run Slowy with the `-XX:-Inline` switch to prevent this optimization and obtain more accurate results that include the `Slowy::isDivisible` method.
+If everything went well, you should see the `perf report` ncurses UI, showing the bottlenecks in the Java program. These will likely be `App::main` and `App::isPrime`, because the smaller methods were optimized away (inlined). You can repeat the experiment and run Slowy with the `-XX:-Inline` switch to prevent this optimization and obtain more accurate results that include the `App::isDivisible` method.
 
 - - -
 
