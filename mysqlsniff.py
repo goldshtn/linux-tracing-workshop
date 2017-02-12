@@ -22,6 +22,10 @@ parser.add_argument("-S", "--stack", action="store_true",
                     help="capture a stack trace for each command")
 parser.add_argument("-d", "--debug", action="store_true",
                     help="show raw message contents for debugging purposes")
+parser.add_argument("-l", "--library", default="pthread",
+                    help="the library to probe (default: pthread)")
+parser.add_argument("-a", "--api", default="__libc_send",
+                    help="the API to probe (default: __libc_send)")
 args = parser.parse_args()
 
 text = """
@@ -87,10 +91,10 @@ def fmt_char(c):
 
 bpf = BPF(text=text)
 # This is by far the most brittle part of the script. We need to attach
-# either to libc:send, or to the SyS_sendto syscall. In the particular example
-# this script is designed for, the MySQL Java client uses the __libc_send
-# symbol in libpthread. In other scenarios, this will likely need to change.
-bpf.attach_uprobe(name="pthread", sym="__libc_send",
+# The MySQL Java client uses __libc_send in libpthread, while the Node.js
+# MySQL module uses __write in libpthread. In other scenarios, this will
+# likely need to change. The user can control these values using cmdline args.
+bpf.attach_uprobe(name=args.library, sym=args.api,
                   fn_name="probe", pid=args.pid)
 def print_event(cpu, data, size):
     event = ct.cast(data, ct.POINTER(Data)).contents
@@ -102,7 +106,7 @@ def print_event(cpu, data, size):
         print(''.join(fmt_char(x) for x in data[5:-1]))
     if args.stack:
         for addr in stacks.walk(event.stackid):
-            print("\t%s" % bpf.symaddr(addr, args.pid))
+            print("\t%s" % bpf.sym(addr, args.pid, show_offset=True))
         print("")
 
 bpf["events"].open_perf_buffer(print_event)
