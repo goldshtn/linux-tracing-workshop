@@ -15,7 +15,7 @@ This repository contains examples and hands-on labs for various Linux tracing wo
 1. [OpenJDK](http://openjdk.java.net)
 1. The **systemtap-sdt-dev** package on Ubuntu or the **systemtap-sdt-devel** package on Fedora/RHEL
 1. [Node.js](https://github.com/nodejs/node/wiki/Installation) built from source with `configure --with-dtrace`
-1. MySQL or [MariaDB](https://mariadb.org)
+1. MySQL or [MariaDB](https://mariadb.org) built from source with `-DENABLE_DTRACE=1`
 1. PostgreSQL built from [source](https://github.com/postgres/postgres) with `configure --enable-dtrace`
 1. [MySQL Python Connector](https://dev.mysql.com/doc/connector-python/en/connector-python-installation.html)
 

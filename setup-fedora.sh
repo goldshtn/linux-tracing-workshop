@@ -63,7 +63,7 @@ sudo dnf --enablerepo=kernel-vanilla-mainline --best --allowerasing \
 
 ### Install basics
 echo "Installing basics..."
-sudo dnf install -y wget git ncurses-devel sysstat
+sudo dnf install -y wget git ncurses-devel sysstat atop httpd-tools
 sudo dnf install -y vim
 
 ### Install glibc debuginfo
@@ -131,6 +131,7 @@ echo "Building Node from source..."
 pushd node
 ./configure --with-dtrace
 make -j $NUMPROCS
+sudo make install
 popd
 
 ### Build Postgres from source
