@@ -2,6 +2,7 @@
 
 export NODE_ENV=production
 
+pkill node
 if [ "$1" == "perf" ]; then
   node --perf_basic_prof bin/www >/dev/null &
 elif [ "$1" == "prof" ]; then
