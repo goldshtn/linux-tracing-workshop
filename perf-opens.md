@@ -38,6 +38,8 @@ If the process is running frequently in kernel mode, it must be making quite a b
 # syscount -c -p $(pidof server)
 ```
 
+> NOTE: There's a BCC tool called syscount, and a perf-tools tool called syscount. If you have both installed and in the path (like in the lab environment), you will need to qualify the specific one -- in this case, the one in the perf-tools folder.
+
 This collects all syscall events. Press Ctrl+C after a few seconds to stop collection. As you can see, the application is making a lot of `nanosleep()` and `open()` calls, but doesn't seem to be making progress. This looks like a typical retry pattern -- try to open a file, fail, and then try again.
 
 - - -
