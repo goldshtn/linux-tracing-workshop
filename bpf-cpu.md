@@ -19,6 +19,8 @@ Now, run `./blocky`. It prints out the number of requests processed, going at a 
 
 #### Task 2: Profiling The CPU-Bound Part
 
+> As with all BPF-based tools, you will need a root shell to run the following commands.
+
 To understand where the application is spending CPU time (which, as we saw, is not most of the wall-clock time), run the following command:
 
 ```
