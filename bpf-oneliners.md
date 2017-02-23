@@ -16,7 +16,7 @@ trace '::sys_setuid "uid = %d", arg1'
 
 In another shell, run `sudo su` or establish a new SSH connection to the machine. In both cases you should see a trace message in the previous shell.
 
-Now, try adding additional probe definitions to also trace `seteuid` and `setresuid`. The latter one has three parameters: the real user id, the effective user id, and the saved set-user-id.
+Now, try adding additional probe definitions to also trace `setreuid` and `setresuid`. The latter one has three parameters: the real user id, the effective user id, and the saved set-user-id.
 
 - - -
 
