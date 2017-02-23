@@ -78,7 +78,7 @@ If you picked the right process id, you should see trace statements after you ru
 
 #### Task 4: Display a PostgreSQL Query Latency Histogram with `argdist`
 
-Once you have the ability to trace queries, it becomes interesting to trace their latency as well. This is not very easy with the USDT probes, because there are two distinct probes we need to trace: `query__start` and `query__done`. Then, we'd need to subtract the end time from the start time to determine the latency -- all of which sounds like too much work for a one-liner. Indeed, in the [bpf-dbslower.md](`dbslower`) lab you will write a custom tool for tracing PostgreSQL/MySQL queries.
+Once you have the ability to trace queries, it becomes interesting to trace their latency as well. This is not very easy with the USDT probes, because there are two distinct probes we need to trace: `query__start` and `query__done`. Then, we'd need to subtract the end time from the start time to determine the latency -- all of which sounds like too much work for a one-liner. Indeed, in the [`dbslower`](bpf-dbslower.md) lab you will write a custom tool for tracing PostgreSQL/MySQL queries.
 
 For now, if we want to keep using `argdist`, we need to find a single function to probe. Then, `argdist` will attach to its entry and exit points, and aggregate latency automatically for us.
 
