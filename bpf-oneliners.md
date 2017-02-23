@@ -28,7 +28,7 @@ Run the following command to attach to the aforementioned `__vfs_write` and `__v
 
 ```
 argdist -T 5 -i 5 \
-  -C 'p::__vfs_write(struct file *f):char*:f->f_path.dentry->d_name.name#writes' 
+  -C 'p::__vfs_write(struct file *f):char*:f->f_path.dentry->d_name.name#writes' \
   -C 'p::__vfs_read(struct file  *f):char*:f->f_path.dentry->d_name.name#reads'
 ```
 
