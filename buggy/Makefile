@@ -1,4 +1,4 @@
-JAVAFLAGS=-XX:+PreserveFramePointer -XX:+UnlockDiagnosticVMOptions -XX:+DebugNonSafepoints -Xcomp
+JAVAFLAGS=-XX:+PreserveFramePointer -Xcomp
 JAVAEXTFLAGS=-XX:+ExtendedDTraceProbes
 
 build:
