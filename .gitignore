@@ -1,3 +1,4 @@
 wordcount
 *.dSYM/
 bin/
+node_modules/
