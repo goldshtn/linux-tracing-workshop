@@ -68,7 +68,7 @@ Now, go back to the psql shell and run some SQL statements. For example:
 
 ```
 create table info (id integer primary key, name varchar(200));
-insert into info values (1, "Chair");
+insert into info values (1, 'Chair');
 select * from info;
 ```
 
