@@ -3,7 +3,7 @@
 import sys
 import itertools
 from time import sleep
-from bcc import BPF, ProcessSymbols
+from bcc import BPF
 
 text = """
 #include <linux/ptrace.h>
@@ -149,12 +149,12 @@ def attach(bpf, pid):
     #   uretprobe in pthread_mutex_lock   handled by probe_mutex_lock_return
     #   uprobe    in pthread_mutex_unlock handled by probe_mutex_unlock
 
-def print_frame(syms, addr):
-    print("\t\t%16s (%x)" % (syms.decode_addr(addr), addr))
+def print_frame(bpf, pid, addr):
+    print("\t\t%16s (%x)" % (bpf.sym(addr, pid, show_module=True, show_offset=True), addr))
 
-def print_stack(syms, stacks, stack_id):
+def print_stack(bpf, pid, stacks, stack_id):
     for addr in stacks.walk(stack_id):
-        print_frame(syms, addr)
+        print_frame(bpf, pid, addr)
 
 def run(pid):
     bpf = BPF(text=text)
@@ -164,10 +164,8 @@ def run(pid):
     locks = bpf["locks"]
     mutex_lock_hist = bpf["mutex_lock_hist"]
     mutex_wait_hist = bpf["mutex_wait_hist"]
-    syms = ProcessSymbols(pid=pid)
     while True:
         sleep(5)
-        syms.refresh_code_ranges()
         mutex_ids = {}
         next_mutex_id = 1
         for k, v in init_stacks.items():
@@ -175,7 +173,7 @@ def run(pid):
             next_mutex_id += 1
             mutex_ids[k.value] = mutex_id
             print("init stack for mutex %x (%s)" % (k.value, mutex_id))
-            print_stack(syms, stacks, v.value)
+            print_stack(bpf, pid, stacks, v.value)
             print("")
         grouper = lambda (k, v): k.tid
         sorted_by_thread = sorted(locks.items(), key=grouper)
@@ -183,7 +181,7 @@ def run(pid):
         for tid, items in locks_by_thread:
             print("thread %d" % tid)
             for k, v in sorted(items, key=lambda (k, v): -v.wait_time_ns):
-                mutex_descr = mutex_ids[k.mtx] if k.mtx in mutex_ids else syms.decode_addr(k.mtx)
+                mutex_descr = mutex_ids[k.mtx] if k.mtx in mutex_ids else bpf.sy(k.mtx, pid)
                 # TODO Print a nicely formatted line with the mutex description, wait time,
                 #      hold time, enter count, and stack (use print_stack)
                 print("")
