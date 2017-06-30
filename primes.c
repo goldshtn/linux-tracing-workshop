@@ -15,6 +15,8 @@ int is_prime(int n)
 {
 	if (is_trivial_prime(n))
 		return 1;
+  if (is_divisible(n, 2))
+		return 0;
 	for (int d = 3; d < n; d += 2)
 		if (is_divisible(n, d))
 			return 0;
