@@ -30,19 +30,13 @@ It looks like the process is spending a bit of time in kernel mode.
 
 #### Task 3: Snoop Syscalls
 
-If the process is running frequently in kernel mode, it must be making quite a bunch of syscalls. BCC now has the [ucalls](https://github.com/iovisor/bcc/blob/master/tools/ucalls_example.txt) tool which can trace syscalls (and more), but we're going to stick with `perf` for now (you're encouraged to repeat this exercise using `ucalls`):
+If the process is running frequently in kernel mode, it must be making quite a bunch of syscalls. To characterize its workload, we can use the BCC `syscount` tool:
 
 ```
-# perf record -p $(pidof server) -e 'syscalls:sys_enter_*'
+# syscount -p $(pidof server)
 ```
 
-This collects all syscall enter events. Press Ctrl+C after a few seconds to stop collection, and then run the following command to get a report of the frequently executed syscalls:
-
-```
-# perf script -F event | sort | uniq -c
-```
-
-It looks like the application is calling `nanosleep()` and `open()` quite frequently.
+This collects all syscall events. Press Ctrl+C after a few seconds to stop collection. It looks like the application is calling `nanosleep()` and `open()` quite frequently.
 
 - - -
 
