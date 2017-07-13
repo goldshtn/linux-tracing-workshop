@@ -52,6 +52,7 @@ When this workshop is delivered as instructor-led training, the instructor will 
 1. [Using `perf` Tools: Slow File I/O](perf-io.md)
 1. [Using BPF Tools: Node Blocked Time Analysis](bpf-nodeblocked.md)
 1. [Using BPF Tools: Node Garbage Collections](bpf-nodegc.md)
+1. [Using BPF Tools: Node File Opens](bpf-nodeopens.md)
 1. [Node Profiling with V8](node-prof.md)
 
 - - -
