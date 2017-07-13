@@ -24,7 +24,7 @@ There is no visible CPU activity in the Node process, but the benchmark results 
 
 #### Task 2: Collect Off-CPU Stacks with `offcputime`
 
-The `offcputime` from [BCC](https://github.com/iovisor/bcc) can collect off-CPU stacks for your application's threads, and aggregate them in a way suitable for flame graph generation or direct browsing. Run the following command in a root shell:
+The `offcputime` tool from [BCC](https://github.com/iovisor/bcc) can collect off-CPU stacks for your application's threads, and aggregate them in a way suitable for flame graph generation or direct browsing. Run the following command in a root shell:
 
 ```
 # offcputime -p $(pgrep -n node) -f > folded.stacks
