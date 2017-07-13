@@ -50,6 +50,7 @@ When this workshop is delivered as instructor-led training, the instructor will 
 1. [Using BPF Tools: `trace` and `argdist` One-Liners](bpf-oneliners.md)
 1. [Using BPF Tools: CPU and Off-CPU Investigation](bpf-cpu.md)
 1. [Using `perf` Tools: Slow File I/O](perf-io.md)
+1. [Using BPF Tools: Node Blocked Time Analysis](bpf-nodeblocked.md)
 1. [Node Profiling with V8](node-prof.md)
 
 - - -
