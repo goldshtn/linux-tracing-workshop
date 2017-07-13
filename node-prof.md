@@ -6,7 +6,7 @@ In this lab, you will experiment with profiling a CPU bottleneck in a Node.js ap
 
 #### Task 1: Run the Application with a Benchmark
 
-Navigate to the `nodey` folder. If you haven't yet, you should make sure all required packages are installed by running `npm install`. Then, run the following command to start our simple Node application:
+Navigate to the `nodey` directory. If you haven't yet, you should make sure all required packages are installed by running `npm install`. Then, run the following command to start our simple Node application:
 
 ```
 $ ./run.sh
