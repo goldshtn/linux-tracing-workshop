@@ -66,7 +66,7 @@ If you make another trip to the Products page now, and then look at the executed
 
 #### Task 3: Tracing Queries on the Application Side
 
-At this point, we have reasonably good clarity on the database side as to the queries being executed. In some cases, though, you might not have access to the database server, and need to perform this kind of tracing on the application side. Although there are APM solutions that can trace database queries from Node.js, there is nothing built-in. We will use a demo tool called `mysqlsniff`, which sniffs the MySQL protocol on the socket layer and prints queries matching a given
+At this point, we have reasonably good clarity on the database side as to the queries being executed. In some cases, though, you might not have access to the database server, and need to perform this kind of tracing on the application side. Although there are APM solutions that can trace database queries from Node.js, there is nothing built-in. We will use a demo tool called [`mysqlsniff`](mysqlsniff.py), which sniffs the MySQL protocol on the socket layer and prints queries matching a given
 prefix; it can even include call stacks!
 
 In a root shell, run the following command from the main labs directory:
