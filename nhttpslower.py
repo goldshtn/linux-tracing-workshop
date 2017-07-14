@@ -18,7 +18,7 @@ parser = argparse.ArgumentParser(description="Snoops and prints Node.js HTTP " +
     "requests and responses (client and server) slower than a threshold. " +
     "Requires Node.js built with --enable-dtrace (confirm by using tplist).")
 parser.add_argument("pid", type=int, help="the Node.js process id")
-parser.add_argument("threshold", type=int, default=0,
+parser.add_argument("threshold", type=int, nargs="?", default=0,
                     help="print only requests slower than this threshold (ms)")
 parser.add_argument("-S", "--stack", action="store_true",
                     help="capture a stack trace for each event")
