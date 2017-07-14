@@ -1,5 +1,6 @@
 var crypto = require('crypto');
 var express = require('express');
+var fs = require('fs');
 var router = express.Router();
 
 var users = [];
@@ -13,6 +14,14 @@ function clean_user(name, info) {
   return { name: name, len: processed_salt.length };
 }
 
+function EmailTemplate(template) {
+    this.data = fs.readFileSync(__dirname + template, 'utf8');
+}
+
+function fetch_template() {
+    return new EmailTemplate('/../public/template.html');
+}
+
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   var clean_users = [];
@@ -20,6 +29,26 @@ router.get('/', function(req, res, next) {
     clean_users.push(clean_user(user, users[user]));
   }
   res.json(clean_users);
+});
+
+router.post('/subscribe', function(req, res, next) {
+    var subscriptionTemplate = null;
+    function refreshSubscription() {
+        var original = subscriptionTemplate;
+        var first_test = function() {
+            if (original)
+                console.log("Replacing original subscription.");
+        };
+        subscriptionTemplate = {
+            template: fetch_template(),
+            send: function() {
+                console.log("Sending updated subscription.");
+            }
+        };
+        first_test();
+    }
+    setInterval(refreshSubscription, 1000);
+    res.sendStatus(200);
 });
 
 router.post('/new', function(req, res, next) {
