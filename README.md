@@ -55,6 +55,7 @@ When this workshop is delivered as instructor-led training, the instructor will 
 1. [Using BPF Tools: Node File Opens](bpf-nodeopens.md)
 1. [Using BPF Tools: Node Slow MySQL Queries](bpf-nodemysql.md)
 1. [Node Profiling with V8](node-prof.md)
+1. [Node Core Dump Analysis with `llnode`](node-coredump.md)
 
 - - -
 
