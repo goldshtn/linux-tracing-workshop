@@ -14,12 +14,22 @@ function clean_user(name, info) {
   return { name: name, len: processed_salt.length };
 }
 
+function EmailTemplateNode(index) {
+  this.index = index;
+  this.index_desc = index.toString();
+}
+
 function EmailTemplate(template) {
-    this.data = fs.readFileSync(__dirname + template, 'utf8');
+  this.data = fs.readFileSync(__dirname + template, 'utf8');
+  this.nodes = [];
+  var node_count = Math.random()*1000;
+  for (var i = 0; i < node_count; ++i) {
+    this.nodes.push(new EmailTemplateNode(i));
+  }
 }
 
 function fetch_template() {
-    return new EmailTemplate('/../public/template.html');
+  return new EmailTemplate('/../public/template.html');
 }
 
 /* GET users listing. */
@@ -32,23 +42,23 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/subscribe', function(req, res, next) {
-    var subscriptionTemplate = null;
-    function refreshSubscription() {
-        var original = subscriptionTemplate;
-        var first_test = function() {
-            if (original)
-                console.log("Replacing original subscription.");
-        };
-        subscriptionTemplate = {
-            template: fetch_template(),
-            send: function() {
-                console.log("Sending updated subscription.");
-            }
-        };
-        first_test();
-    }
-    setInterval(refreshSubscription, 1000);
-    res.sendStatus(200);
+  var subscriptionTemplate = null;
+  function refreshSubscription() {
+    var original = subscriptionTemplate;
+    var first_test = function() {
+      if (original)
+        console.log("Replacing original subscription.");
+    };
+    subscriptionTemplate = {
+      template: fetch_template(),
+      send: function() {
+        console.log("Sending updated subscription.");
+      }
+    };
+    first_test();
+  }
+  setInterval(refreshSubscription, 1000);
+  res.sendStatus(200);
 });
 
 router.post('/new', function(req, res, next) {
