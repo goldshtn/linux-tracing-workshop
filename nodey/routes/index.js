@@ -25,6 +25,15 @@ function loadUsers(cb) {
   connection.end();
 }
 
+function authenticate_stats(key, cb) {
+  setTimeout(function() {
+    if (key == 'mykey')
+      cb(null);
+    else
+      cb(new Error('invalid key'));
+  }, 1000);
+}
+
 function getProduct(conn, id, cb) {
   conn.query('CALL getproduct(' + id + ')', function(error, results, fields) {
     if (error) cb(error);
@@ -74,6 +83,15 @@ router.get('/stats', function(req, res, next) {
   var len = 10*1024*1024;
   fs.writeFileSync('nodey.stats', new Array(len).join('q'));
   res.json({ ok: true, written: len });
+});
+
+router.put('/stats', function(req, res, next) {
+  var stats = req.body;
+  authenticate_stats(stats.auth, function(err) {
+    if (err)
+      throw err;
+    res.sendStatus(201);
+  });
 });
 
 router.get('/products', function(req, res, next) {
