@@ -63,7 +63,7 @@ sudo dnf --enablerepo=kernel-vanilla-mainline --best --allowerasing \
 
 ### Install basics
 echo "Installing basics..."
-sudo dnf install -y wget git ncurses-devel sysstat atop httpd-tools file
+sudo dnf install -y wget git ncurses-devel sysstat atop httpd-tools file lldb
 sudo dnf install -y vim
 
 ### Install glibc debuginfo
