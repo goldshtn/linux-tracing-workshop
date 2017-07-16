@@ -71,7 +71,7 @@ Each of these commands should produce a long list of instances; you can inspect 
 
 As you see, working with `llnode` to analyze V8 memory leaks is quite painful. You can only look at individual objects (there are no summaries), there's no way to see the retained size of an object, and the whole experience relies on a text-based interface, which is often unusable when there is a very large number of objects and types.
 
-Open the [app.js](nodey/app.js) file, and add the following line in the requiress section:
+Open the [app.js](nodey/app.js) file, and add the following line in the requires section:
 
 ```javascript
 var heapdump = require('heapdump');
@@ -104,7 +104,7 @@ The heap snapshots will be generated in the `nodey` directory. After the snapsho
 
 - - -
 
-##### Task 5: Analyze the Heap Snapshots in Chrome Developer Tools
+#### Task 5: Analyze the Heap Snapshots in Chrome Developer Tools
 
 To open the heap snapshots generated in the previous task, you will need Chrome Developer Tools. Open Chrome, hit F12 to open the Developer Tools, navigate to the Profiles tab or the Memory tab (depending on your version of Chrome), and load the heap snapshots one by one. Each snapshot will contain a summary of objects by type, general statistics, and a compare feature that diffs two snapshots and shows which objects were newly retained between two snapshots.
 
