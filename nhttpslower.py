@@ -4,6 +4,11 @@
 #               This tool is experimental and designed for teaching purposes
 #               only; it is neither tested nor suitable for production work.
 #
+# NOTE: Node http__client* probes are not accurate in that they do not report
+#       the fd, remote, and port. This makes it impossible to correlate request
+#       and response probes, and a result the tool does not work correctly if
+#       there are multiple client requests in flight in parallel.
+#
 # Copyright (C) Sasha Goldshtein, 2017
 
 import argparse
@@ -45,6 +50,7 @@ struct val_t {
 };
 
 struct data_t {
+    u64 start_ns;
     u64 duration_ns;
     int port;
     int type;
@@ -109,8 +115,9 @@ int PROBE_end(struct pt_regs *ctx) {
 
     duration = bpf_ktime_get_ns() - valp->start_ns;
     if (duration < THRESHOLD)
-        return 0;
+        goto EXIT;
 
+    data.start_ns = valp->start_ns;
     data.duration_ns = duration;
     data.port = key.port;
     data.type = valp->type;
@@ -124,6 +131,9 @@ int PROBE_end(struct pt_regs *ctx) {
     bpf_probe_read(&data.remote, sizeof(data.remote), remote);
 
     events.perf_submit(ctx, &data, sizeof(data));
+
+EXIT:
+    starts.delete(&key);
     return 0;
 }
 """
@@ -151,6 +161,7 @@ bpf = BPF(text=text, usdt_contexts=[usdt],
 
 class Data(ct.Structure):
     _fields_ = [
+        ("start_ns", ct.c_ulong),
         ("duration_ns", ct.c_ulong),
         ("port", ct.c_int),
         ("type", ct.c_int),
@@ -160,11 +171,18 @@ class Data(ct.Structure):
         ("remote", ct.c_char * 128)
     ]
 
+delta = 0
+prev_ts = 0
+
 def print_event(cpu, data, size):
+    global delta, prev_ts
     event = ct.cast(data, ct.POINTER(Data)).contents
     typ = "CLI" if event.type == CLIENT else "SVR"
-    print("%3s %11.3f %-16s %-5d %-8s %s" %
-          (typ, event.duration_ns/1000000.0, event.remote,
+    if prev_ts != 0:
+        delta += event.start_ns - prev_ts
+    prev_ts = event.start_ns
+    print("%-14.9f %3s %11.3f %-16s %-5d %-8s %s" %
+          (delta/1e9, typ, event.duration_ns/1e6, event.remote,
            event.port, event.method, event.url))
     if args.stack:
         for addr in stacks.walk(event.stackid):
@@ -175,7 +193,7 @@ bpf["events"].open_perf_buffer(print_event)
 if args.stack:
     stacks = bpf["stacks"]
 print("Snooping HTTP requests in Node process %d, Ctrl+C to quit." % args.pid)
-print("%3s %-11s %-16s %-5s %-8s %s" %
-      ("TYP", "DURATION_ms", "REMOTE", "PORT", "METHOD", "URL"))
+print("%-14s %3s %-11s %-16s %-5s %-8s %s" %
+      ("TIME_s", "TYP", "DURATION_ms", "REMOTE", "PORT", "METHOD", "URL"))
 while 1:
     bpf.kprobe_poll()

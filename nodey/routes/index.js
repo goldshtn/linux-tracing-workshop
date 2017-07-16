@@ -2,7 +2,25 @@ var async = require('async');
 var express = require('express');
 var fs = require('fs');
 var mysql = require('mysql');
+var request = require('request');
 var router = express.Router();
+
+function prime_product(product_id) {
+  return product_id.startsWith('g');
+}
+
+function inventory_services(product_id) {
+  var services = fs
+           .readFileSync(__dirname + '/../inventory.lst', 'utf-8')
+           .split('\n')
+           .filter(Boolean)
+           .filter(function(s) { return !s.startsWith('#'); })
+           .map(function(s) { return s + '&product_id=' + product_id; });
+  if (!prime_product(product_id)) {
+    services.splice(2, 1);
+  }
+  return services;
+}
 
 function createConnection() {
   return mysql.createConnection({
@@ -113,6 +131,20 @@ router.get('/products', function(req, res, next) {
         }
         else res.json(users);
       });
+    }
+  });
+});
+
+router.get('/inventory', function(req, res, next) {
+  var services = inventory_services(req.query.product_id);
+  async.mapSeries(services, request, function(err, results) {
+    if (err)
+      res.sendStatus(500);
+    else {
+      res.json(results.map(function(r) {
+        var body = JSON.parse(r.body);
+        return body.args;
+      }));
     }
   });
 });
