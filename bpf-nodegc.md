@@ -76,3 +76,9 @@ $ ab -n 100 http://localhost:3000/users
 And finally, hit Ctrl+C in the root shell to get a stack summary. The heaviest stacks are shown on the bottom, and you can clearly see the paths in the application source that triggered collections. You can repeat the experiment, adding `-f` to the `stackcount` invocation, to get a folded stacks file ready for flame graph generation, if you'd like a better visualization.
 
 - - -
+
+#### Bonus
+
+The [`node-gc-profiler`] module can be embedded in your Node application and emit events after each GC cycle, detailing the GC duration and type. You can then use this information to programmatically detect long or excessive GCs. If you have time, try this module out with the `nodey` application and see if you can easily get GC statistics reported.
+
+- - -
