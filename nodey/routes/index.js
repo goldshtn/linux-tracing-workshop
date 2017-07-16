@@ -9,17 +9,28 @@ function prime_product(product_id) {
   return product_id.startsWith('g');
 }
 
+function dynamic_product(product_id) {
+  return product_id.startsWith('dyn');
+}
+
+function dynamic_inventory_service() {
+  return 'http://' + Math.trunc(Math.random() * 100000).toString()
+                   + '.example.org/inventory?svc=sdyn199';
+}
+
 function inventory_services(product_id) {
   var services = fs
            .readFileSync(__dirname + '/../inventory.lst', 'utf-8')
            .split('\n')
            .filter(Boolean)
-           .filter(function(s) { return !s.startsWith('#'); })
-           .map(function(s) { return s + '&product_id=' + product_id; });
+           .filter(function(s) { return !s.startsWith('#'); });
   if (!prime_product(product_id)) {
     services.splice(2, 1);
   }
-  return services;
+  if (dynamic_product(product_id)) {
+    services.push(dynamic_inventory_service());
+  }
+  return services.map(function(s) { return s + '&product_id=' + product_id; });
 }
 
 function createConnection() {
@@ -138,14 +149,14 @@ router.get('/products', function(req, res, next) {
 router.get('/inventory', function(req, res, next) {
   var services = inventory_services(req.query.product_id);
   async.mapSeries(services, request, function(err, results) {
-    if (err)
-      res.sendStatus(500);
-    else {
-      res.json(results.map(function(r) {
+    res.json({
+      data: results.filter(Boolean).map(function(r) {
         var body = JSON.parse(r.body);
         return body.args;
-      }));
-    }
+      }),
+      error: err ? "an error occurred enumerating one of the inventory services"
+                 : null
+    });
   });
 });
 

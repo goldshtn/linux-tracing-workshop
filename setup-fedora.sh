@@ -63,7 +63,8 @@ sudo dnf --enablerepo=kernel-vanilla-mainline --best --allowerasing \
 
 ### Install basics
 echo "Installing basics..."
-sudo dnf install -y wget git ncurses-devel sysstat atop httpd-tools file lldb
+sudo dnf install -y wget git ncurses-devel sysstat atop httpd-tools file \
+                    lldb bind-utils
 sudo dnf install -y vim
 
 ### Install glibc debuginfo
@@ -85,6 +86,7 @@ git clone --depth=1 https://github.com/postgres/postgres
 git clone --depth=1 https://github.com/MariaDB/server mariadb
 git clone --depth=1 https://github.com/jrudolph/perf-map-agent
 git clone --depth=1 https://github.com/brendangregg/perf-tools
+git clone --depth=1 https://github.com/goldshtn/slodns
 
 ### Install prerequisites for building BCC
 echo "Installing build tools..."

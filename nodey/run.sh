@@ -2,17 +2,44 @@
 
 export NODE_ENV=production
 
-pkill node
+function kill_ns {
+  if ps -ef | grep -v grep | grep -q -F './slodns'; then
+    ps -ef | grep './slodns' | grep -v grep | awk '{ print $2 }' | \
+             xargs sudo kill -9
+  fi
+}
+
+function setup_ns {
+  if ! grep -q -F 127.0.0.1 /etc/resolv.conf; then
+    echo -e "nameserver 127.0.0.1\n$(cat /etc/resolv.conf)" \
+            | sudo tee /etc/resolv.conf
+  fi
+  kill_ns
+  if ! [ -f ./slodns ]; then
+    wget -q https://raw.githubusercontent.com/goldshtn/slodns/master/slodns \
+         -O slodns
+    chmod u+x ./slodns
+  fi
+  sudo ./slodns -p 53 -d 1000 -j 500 >/dev/null &
+  disown
+}
+
 if [ "$1" == "perf" ]; then
   FLAGS="--perf_basic_prof"
 elif [ "$1" == "prof" ]; then
   FLAGS="--prof"
 elif [ "$1" == "core" ]; then
   FLAGS="--abort-on-uncaught-exception"
+elif [ "$1" == "dns" ]; then
+  setup_ns
+elif [ "$1" == "killdns" ]; then
+  kill_ns
+  exit
 else
   FLAGS=""
 fi
 
+pkill node
 node $FLAGS bin/www >/dev/null &
 
 sleep 1
