@@ -72,3 +72,8 @@ able to use to figure out the wrong key provided by the client (if you hadn't ru
 
 - - -
 
+#### Bonus
+
+The [`core-dump`](https://github.com/davidmarkclements/core-dump) Node module can be used for somewhat more advanced core dump generation. For example, you can use it to generate core dumps programmatically from within the Node process (e.g. when an interesting condition is met), or you can use it to generate a core dump externally from a shell. (The latter can also be done with `gcore`; see the [Node Memory Leak Analysis exercise](node-memleak.md).)
+
+- - -
