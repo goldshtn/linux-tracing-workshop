@@ -1,0 +1,10 @@
+# Main inventory
+http://httpbin.org/get?svc=a12&inventory=available
+http://httpbin.org/get?svc=b22&inventory=available
+
+# Prime inventory service
+http://httpbin.org/delay/2?svc=g11&inventory=not_available
+
+# Backup warehouses
+http://httpbin.org/get?svc=a78&inventory=not_available
+http://httpbin.org/get?svc=b43&inventory=available
