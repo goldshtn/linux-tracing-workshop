@@ -24,6 +24,18 @@ function setup_ns {
   disown
 }
 
+function bench {
+  for x in `seq 0 50`; do
+    for y in `seq 0 50`; do
+      start_ts=`date +%s%N`
+      curl -X POST "http://localhost:3000/position?x=$x&y=$y&z=0"
+      end_ts=`date +%s%N`
+      runtime=$(((end_ts-start_ts)/1000))
+      printf "running time: %dus\n" $runtime
+    done
+  done
+}
+
 if [ "$1" == "perf" ]; then
   FLAGS="--perf_basic_prof"
 elif [ "$1" == "prof" ]; then
@@ -34,6 +46,9 @@ elif [ "$1" == "dns" ]; then
   setup_ns
 elif [ "$1" == "killdns" ]; then
   kill_ns
+  exit
+elif [ "$1" == "bench" ]; then
+  bench
   exit
 else
   FLAGS=""

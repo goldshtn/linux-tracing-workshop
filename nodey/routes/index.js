@@ -1,9 +1,13 @@
 var async = require('async');
 var express = require('express');
 var fs = require('fs');
+var HashTable = require('../utils/hashtable');
 var mysql = require('mysql');
+var pos = require('../utils/position');
 var request = require('request');
 var router = express.Router();
+
+var positions = new HashTable(pos.hasher, pos.comparer, 1337);
 
 function prime_product(product_id) {
   return product_id.startsWith('g');
@@ -158,6 +162,17 @@ router.get('/inventory', function(req, res, next) {
                  : null
     });
   });
+});
+
+router.post('/position', function(req, res, next) {
+  var x = req.query.x, y = req.query.y, z = req.query.z;
+  var position = new pos.Position(x, y, z);
+  if (positions.get(position) != null)
+    res.sendStatus(400);
+  else {
+    positions.put(position, 1);
+    res.sendStatus(201);
+  }
 });
 
 module.exports = router;
