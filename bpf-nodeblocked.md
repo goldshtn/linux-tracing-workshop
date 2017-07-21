@@ -47,6 +47,8 @@ $ cat folded.stacks | FlameGraph/flamegraph.pl > offcputime.svg
 It should become evident that the application is spending lots of time writing to files, and doing so _synchronously_ from the event loop thread. This blocks further request processing, effectively serializing the handling of these requests. One option would be to rewrite this section of the code to use asynchronous file operations, but first, we need to understand which files are being accessed, and why. Perhaps the file writes are really small, and we simply have a defective
 disk, which is making these writes execute so slowly?
 
+> NOTE: Detecting synchronous operations on the event thread is also possible using the `--trace-sync-io` command-line switch. Try launching Node directly with this switch, and seeing the exact call stacks responsible. This doesn't help, though, when background threads issue the slow I/O operations, or when you're investigating a production issue.
+
 - - -
 
 #### Task 3: Identify Files Being Accessed with `fileslower`
