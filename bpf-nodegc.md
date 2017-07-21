@@ -79,6 +79,6 @@ And finally, hit Ctrl+C in the root shell to get a stack summary. The heaviest s
 
 #### Bonus
 
-The [`node-gc-profiler`] module can be embedded in your Node application and emit events after each GC cycle, detailing the GC duration and type. You can then use this information to programmatically detect long or excessive GCs. If you have time, try this module out with the `nodey` application and see if you can easily get GC statistics reported.
+The [`node-gc-profiler`](https://github.com/bretcope/node-gc-profiler) module can be embedded in your Node application and emit events after each GC cycle, detailing the GC duration and type. You can then use this information to programmatically detect long or excessive GCs. If you have time, try this module out with the `nodey` application and see if you can easily get GC statistics reported.
 
 - - -
