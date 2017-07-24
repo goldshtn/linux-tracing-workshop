@@ -51,7 +51,7 @@ elif [ "$1" == "bench" ]; then
   bench
   exit
 else
-  FLAGS=""
+  FLAGS="$@"
 fi
 
 pkill node
