@@ -82,7 +82,7 @@ The [heapdump](https://github.com/bnoordhuis/node-heapdump) module adds a backgr
 * An API that you can use to create heap snapshots directly, on demand (`heapdump.writeSnapshot`)
 * A signal handler that you can invoke externally by sending the `SIGUSR2` signal to the process
 
-Run `npm install` to get the `heapdump` module, and then run the application again:
+Run `npm install --save heapdump` to get the `heapdump` module, and then run the application again:
 
 ```
 $ ./run.sh
