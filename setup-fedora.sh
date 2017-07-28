@@ -93,7 +93,7 @@ echo "Installing build tools..."
 sudo dnf install -y systemtap-sdt-devel
 sudo dnf install -y bison cmake ethtool flex git iperf libstdc++-static \
   python-netaddr python-pip gcc gcc-c++ make zlib-devel \
-  elfutils-libelf-devel gnutls-devel redhat-rpm-config
+  elfutils-libelf-devel gnutls-devel redhat-rpm-config python-devel
 sudo dnf install -y clang clang-devel llvm llvm-devel llvm-static
 sudo dnf install -y luajit luajit-devel
 sudo pip install pyroute2
