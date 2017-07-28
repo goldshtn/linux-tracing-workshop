@@ -88,12 +88,12 @@ git clone --depth=1 https://github.com/jrudolph/perf-map-agent
 git clone --depth=1 https://github.com/brendangregg/perf-tools
 git clone --depth=1 https://github.com/goldshtn/slodns
 
-### Install prerequisites for building BCC
+### Install prerequisites for building stuff
 echo "Installing build tools..."
 sudo dnf install -y systemtap-sdt-devel
 sudo dnf install -y bison cmake ethtool flex git iperf libstdc++-static \
   python-netaddr python-pip gcc gcc-c++ make zlib-devel \
-  elfutils-libelf-devel
+  elfutils-libelf-devel gnutls-devel
 sudo dnf install -y clang clang-devel llvm llvm-devel llvm-static
 sudo dnf install -y luajit luajit-devel
 sudo pip install pyroute2
