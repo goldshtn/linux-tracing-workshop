@@ -156,7 +156,7 @@ After 10 seconds, perf will exit and inform you how many samples were collected.
 It always helps to visualize stack trace information as a flame graph. Run the following command to generate a flame graph SVG, and then open it in a browser or some other SVG viewer to see the stack traces visually (in the following command, replace `FlameGraph` if needed with the directory where you cloned the [FlameGraph](https://github.com/brendangregg/FlameGraph) repository):
 
 ```
-perf script | FlameGraph/stackcollapse-perf.pl | FlameGraph/flamegraph.pl --color java > io-stacks.svg
+perf script | FlameGraph/stackcollapse-perf.pl | FlameGraph/flamegraph.pl --color java > java-io-stacks.svg
 ```
 
 > Note: The `--color java` argument changes the default color palette for the flame graph to differentiate between C frames, native JVM frames, and Java frames.
