@@ -5,18 +5,22 @@ PERFTOOLS = $(LABROOT)/perf-tools
 CORECLR = $(SRCROOT)/out/libcoreclr.so
 PORT = 8888
 
+dockersvc:
+	sudo service docker start
+
 build:
 	dotnet publish -c Release -o $(SRCROOT)/out --self-contained -r linux-x64
 
 run:
 	ASPNETCORE_URLS="http://*:$(PORT)" COMPlus_PerfMapEnabled=1 \
-									   COMPlus_EnableEventLog=1 \
-									   $(SRCROOT)/out/Gatos
+			COMPlus_EnableEventLog=1 \
+			$(SRCROOT)/out/Gatos
 
 dockerrun:
-	sudo docker run -it -d -p $(PORT):$(PORT) -v $(SRCROOT)/out/:/app --name gatos         \
-					-e 'ASPNETCORE_URLS=http://*:8888' microsoft/dotnet:2.0.0-runtime-deps \
-					/app/Gatos
+	sudo docker rm gatos
+	sudo docker build -t goldshtn/dotnet-runtime:latest - < $(SRCROOT)/Dockerfile.runtime
+	sudo docker run -d -p $(PORT):$(PORT) -v $(SRCROOT)/out/:/app --name gatos  \
+		-e 'ASPNETCORE_URLS=http://*:8888' goldshtn/dotnet-runtime:latest
 
 authbench:
 	ab -n 10000 -c 10 -T 'application/json' -p ./auth.json localhost:$(PORT)/api/auth
@@ -25,7 +29,7 @@ authrecord:
 	sudo perf record -a -g -F 97 -- sleep 10
 	sudo chown fedora perf.data
 	perf script | $(FLAMEGRAPH)/stackcollapse-perf.pl \
-		        | $(FLAMEGRAPH)/flamegraph.pl > /tmp/dotnet.svg
+		| $(FLAMEGRAPH)/flamegraph.pl > /tmp/dotnet.svg
 	curl --upload-file /tmp/dotnet.svg https://transfer.sh 2>/dev/null
 
 putstatsbench:
@@ -42,11 +46,11 @@ getstatsbench:
 
 getstatsrecord:
 	sudo $(PERFTOOLS)/bin/uprobe \
-		 "p:$(CORECLR):_ZN3SVR6GCHeap24GarbageCollectGenerationEj9gc_reason"
+		"p:$(CORECLR):_ZN3SVR6GCHeap24GarbageCollectGenerationEj9gc_reason"
 
 catssingle:
 	curl -v -H 'Content-Type: application/json' \
-		 --data '{"maxweight":42, "maxage":3}' localhost:$(PORT)/api/cat
+		--data '{"maxweight":42, "maxage":3}' localhost:$(PORT)/api/cat
 
 catsrecord:
 	sudo $(PERFTOOLS)/bin/kprobe -p `pidof Gatos` 'p:tcp_sendmsg size=%dx'
@@ -71,7 +75,7 @@ gcview:
 
 gcallocstats:
 	sudo babeltrace /tmp | grep GCAllocationTick | grep 'TypeName = "[^"]*"' -o \
-						 | sort | uniq -c | sort -n
+		| sort | uniq -c | sort -n
 
 catsbench:
 	ab -n 1000 -c 10 -T 'application/json' -p cat.json localhost:$(PORT)/api/cat
@@ -91,6 +95,7 @@ allocstacks:
 	curl --upload-file /tmp/alloc.svg https://transfer.sh 2>/dev/null
 
 update:
+	echo core | sudo tee /proc/sys/kernel/core_pattern
 	curl -v -H 'Content-Type: application/json' --data "" localhost:$(PORT)/api/cat/update
 	echo "Nothing bad seems to have happened. But now let's run some more requests:"
 	sleep 10
@@ -101,8 +106,8 @@ updatelogs:
 
 updateanalyze:
 	sudo docker cp gatos:/core.1 $(SRCROOT)/out/core
-	sudo docker build -t analyzer - < $(SRCROOT)/Dockerfile
+	sudo docker build -t analyzer - < $(SRCROOT)/Dockerfile.analysis
 	sudo docker run --rm -it -v $(SRCROOT)/out:/app analyzer \
-						 -o "plugin load /app/libsosplugin.so"
+		-o "plugin load /app/libsosplugin.so"
 	sudo docker rm gatos
 	sudo docker image prune -f

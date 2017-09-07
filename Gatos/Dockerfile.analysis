@@ -1,7 +1,7 @@
-FROM ubuntu:14.04
+FROM goldshtn/dotnet-runtime:latest
 LABEL maintainer="Sasha Goldshtein <goldshtn@gmail.com>"
 
-RUN apt update -y && apt install -y lldb-3.6 libunwind8
+RUN apt update -y && apt install -y lldb-3.6 && rm -rf /var/lib/apt/lists/*
 
 VOLUME app
 
