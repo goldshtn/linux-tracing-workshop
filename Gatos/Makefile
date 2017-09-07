@@ -17,7 +17,7 @@ run:
 			$(SRCROOT)/out/Gatos
 
 dockerrun:
-	sudo docker rm gatos
+	sudo docker rm -f gatos || true
 	sudo docker build -t goldshtn/dotnet-runtime:latest - < $(SRCROOT)/Dockerfile.runtime
 	sudo docker run -d -p $(PORT):$(PORT) -v $(SRCROOT)/out/:/app --name gatos  \
 		-e 'ASPNETCORE_URLS=http://*:8888' goldshtn/dotnet-runtime:latest
