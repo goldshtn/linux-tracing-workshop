@@ -33,8 +33,3 @@ sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/dock
 sudo dnf makecache -y fast
 sudo dnf install -y docker-ce
 sudo systemctl start docker
-
-#
-# Needed to demonstrate core dumps inside Docker
-#
-echo core | sudo tee /proc/sys/kernel/core_pattern
