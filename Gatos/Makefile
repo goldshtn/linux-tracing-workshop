@@ -97,7 +97,7 @@ allocstacks:
 update:
 	echo core | sudo tee /proc/sys/kernel/core_pattern
 	curl -v -H 'Content-Type: application/json' --data "" localhost:$(PORT)/api/cat/update
-	echo "Nothing bad seems to have happened. But now let's run some more requests:"
+	@echo "Nothing bad seems to have happened. But now let's run some more requests:"
 	sleep 10
 	make getstatsbench
 
