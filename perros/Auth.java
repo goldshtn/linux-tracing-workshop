@@ -1,6 +1,5 @@
 package perros;
 
-import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -8,10 +7,9 @@ import java.util.Arrays;
 import java.util.Map;
 
 class AuthHandler implements ApiHandler {
-    public void handle(HttpExchange request, Map<String, String> queryParams,
-                       Map bodyJson) throws IOException {
-        String username = bodyJson.get("username").toString();
-        String password = bodyJson.get("password").toString();
+    public void handle(Request request) throws IOException {
+        String username = request.bodyJson().get("username").toString();
+        String password = request.bodyJson().get("password").toString();
         
         try {
             MessageDigest sha = MessageDigest.getInstance("SHA-256");
@@ -25,8 +23,7 @@ class AuthHandler implements ApiHandler {
         }
 
         // For now, we're OK with any password :-)
-        request.sendResponseHeaders(200, 0);
-        request.getResponseBody().close();
+        request.ok();
     }
 
     private String getSalt(String username) {

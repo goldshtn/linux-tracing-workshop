@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
@@ -15,35 +16,57 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 interface ApiHandler {
-    void handle(HttpExchange request, Map<String, String> queryParams,
-                Map bodyJson) throws IOException;
+    void handle(Request request) throws IOException;
 }
 
-class Router implements HttpHandler {
-    private Map<String, ApiHandler> routes = new HashMap<String, ApiHandler>();
-    private ScriptEngine engine;
+class Request {
+    private HttpExchange exchange;
+    private Map<String, String> queryParams;
+    private Map bodyJson;
+    private static ScriptEngine engine;
 
-    public Router() {
-        ScriptEngineManager sem = new ScriptEngineManager();
-        engine = sem.getEngineByName("javascript");
+    public Request(HttpExchange exch) {
+        exchange = exch;
+        String query = exch.getRequestURI().getQuery();
+        queryParams = parseQuery(query);
+        bodyJson = parseBody(exch.getRequestBody());
     }
 
-    public void handle(HttpExchange request) throws IOException {
-        String path = request.getRequestURI().getPath();
-        ApiHandler handler = routes.get(path);
-        if (handler == null) {
-            request.sendResponseHeaders(400, 0);
-            request.getResponseBody().close();
-        } else {
-            String query = request.getRequestURI().getQuery();
-            Map<String, String> queryParams = parseQuery(query);
-            Map bodyJson = parseBody(request.getRequestBody());
-            handler.handle(request, queryParams, bodyJson);
-        }
+    public InputStream requestBody() {
+        return exchange.getRequestBody();
     }
 
-    public void addRoute(String route, ApiHandler handler) {
-        routes.put(route, handler);
+    public OutputStream responseBody() {
+        return exchange.getResponseBody();
+    }
+
+    public Map<String, String> queryParams() {
+        return queryParams;
+    }
+
+    public Map bodyJson() {
+        return bodyJson;
+    }
+
+    public String method() {
+        return exchange.getRequestMethod();
+    }
+
+    public void badRequest() throws IOException {
+        finish(400);
+    }
+
+    public void ok() throws IOException {
+        finish(200);
+    }
+
+    public void finish(int status) throws IOException {
+        exchange.sendResponseHeaders(status, 0);
+        exchange.getResponseBody().close();
+    }
+
+    public void finish(int status, String body) throws IOException {
+        // TODO
     }
 
     private Map parseBody(InputStream stream) {
@@ -75,6 +98,31 @@ class Router implements HttpHandler {
         }
         return result;
     }
+
+    static {
+        ScriptEngineManager sem = new ScriptEngineManager();
+        engine = sem.getEngineByName("javascript");
+    }
+}
+
+class Router implements HttpHandler {
+    private Map<String, ApiHandler> routes = new HashMap<String, ApiHandler>();
+
+    public void handle(HttpExchange exchange) throws IOException {
+        String path = exchange.getRequestURI().getPath();
+        ApiHandler handler = routes.get(path);
+        if (handler == null) {
+            exchange.sendResponseHeaders(400, 0);
+            exchange.getResponseBody().close();
+        } else {
+            Request request = new Request(exchange);
+            handler.handle(request);
+        }
+    }
+
+    public void addRoute(String route, ApiHandler handler) {
+        routes.put(route, handler);
+    }
 }
 
 class App {
@@ -86,6 +134,7 @@ class App {
 
         Router router = new Router();
         router.addRoute("/auth", new AuthHandler());
+        router.addRoute("/register", new RegisterHandler());
 
         int port = Integer.parseInt(args[0]);
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
