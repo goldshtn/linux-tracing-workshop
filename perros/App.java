@@ -60,13 +60,25 @@ class Request {
         finish(200);
     }
 
+    public void unauthorized() throws IOException {
+        finish(403);
+    }
+
+    public void internalServerError(String error) throws IOException {
+        finish(500, "Internal Server Error: " + error);
+    }
+
     public void finish(int status) throws IOException {
         exchange.sendResponseHeaders(status, 0);
         exchange.getResponseBody().close();
     }
 
     public void finish(int status, String body) throws IOException {
-        // TODO
+        byte[] bytes = body.getBytes();
+        exchange.sendResponseHeaders(status, bytes.length);
+        try (OutputStream out = exchange.getResponseBody()) {
+            out.write(bytes);
+        }
     }
 
     private Map parseBody(InputStream stream) {
@@ -116,7 +128,11 @@ class Router implements HttpHandler {
             exchange.getResponseBody().close();
         } else {
             Request request = new Request(exchange);
-            handler.handle(request);
+            try {
+                handler.handle(request);
+            } catch (Exception e) {
+                request.internalServerError(e.getClass().toString());
+            }
         }
     }
 
@@ -135,6 +151,7 @@ class App {
         Router router = new Router();
         router.addRoute("/auth", new AuthHandler());
         router.addRoute("/register", new RegisterHandler());
+        router.addRoute("/admin", new AdminHandler());
 
         int port = Integer.parseInt(args[0]);
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);

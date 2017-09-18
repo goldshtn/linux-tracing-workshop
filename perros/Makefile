@@ -1,10 +1,12 @@
+LABSROOT=~/tracing-workshop
 HOST=localhost
 PORT=8000
-PERFMAPAGENT=~/src/perf-map-agent
-FLAMEGRAPH=~/src/FlameGraph
+PERFMAPAGENT=$(LABSROOT)/perf-map-agent
+FLAMEGRAPH=$(LABSROOT)/FlameGraph
 FGOUT=/tmp/fg.svg
 JAVAOPTS=-XX:+PreserveFramePointer
-APROFILER=~/src/async-profiler
+APROFILER=$(LABSROOT)/async-profiler
+BCC=/usr/share/bcc/tools
 
 build:
 	mkdir -p out
@@ -36,6 +38,15 @@ registerrecord:
 	$(APROFILER)/profiler.sh -d 10 -o collapsed -f /tmp/java.stacks `pidof java`
 	$(FLAMEGRAPH)/flamegraph.pl --colors=java < /tmp/java.stacks > $(FGOUT)
 	curl --upload-file $(FGOUT) https://transfer.sh
+
+adminrepro:
+	curl 'localhost:8000/admin?username=david' -v
+
+adminsnoop:
+	sudo $(BCC)/opensnoop -p `pidof java` -x
+
+adminfix:
+	echo 'approve: david' | sudo tee /etc/perros.conf
 
 clean:
 	rm -rf out
