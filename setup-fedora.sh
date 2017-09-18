@@ -87,6 +87,7 @@ git clone --depth=1 https://github.com/MariaDB/server mariadb
 git clone --depth=1 https://github.com/jrudolph/perf-map-agent
 git clone --depth=1 https://github.com/brendangregg/perf-tools
 git clone --depth=1 https://github.com/goldshtn/slodns
+git clone --depth=1 https://github.com/jvm-profiling-tools/async-profiler
 
 ### Install prerequisites for building stuff
 echo "Installing build tools..."
@@ -126,6 +127,13 @@ pushd perf-map-agent
 cmake .
 make
 bin/create-links-in .
+popd
+
+### Building async-profiler
+echo "Building async-profiler..."
+pushd async-profiler
+export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which javac))))
+make
 popd
 
 ### Build Node from source
