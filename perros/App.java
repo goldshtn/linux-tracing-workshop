@@ -16,7 +16,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 interface ApiHandler {
-    void handle(Request request) throws IOException;
+    void handle(Request request) throws Exception;
 }
 
 class Request {
@@ -142,7 +142,7 @@ class Router implements HttpHandler {
 }
 
 class App {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         if (args.length < 1) {
             System.err.println("USAGE: <port>");
             System.exit(1);
@@ -152,6 +152,7 @@ class App {
         router.addRoute("/auth", new AuthHandler());
         router.addRoute("/register", new RegisterHandler());
         router.addRoute("/admin", new AdminHandler());
+        router.addRoute("/users", new UsersHandler());
 
         int port = Integer.parseInt(args[0]);
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);

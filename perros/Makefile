@@ -1,19 +1,22 @@
-LABSROOT=~/tracing-workshop
+ALLROOT=~/tracing-workshop
+LABSROOT=$(ALLROOT)/labs
 HOST=localhost
 PORT=8000
-PERFMAPAGENT=$(LABSROOT)/perf-map-agent
-FLAMEGRAPH=$(LABSROOT)/FlameGraph
+PERFMAPAGENT=$(ALLROOT)/perf-map-agent
+FLAMEGRAPH=$(ALLROOT)/FlameGraph
 FGOUT=/tmp/fg.svg
 JAVAOPTS=-XX:+PreserveFramePointer
-APROFILER=$(LABSROOT)/async-profiler
+APROFILER=$(ALLROOT)/async-profiler
 BCC=/usr/share/bcc/tools
+MYSQLCONNJAR=$(LABSROOT)/buggy/mysql-connector-java-5.1.40-bin.jar
 
 build:
 	mkdir -p out
+	cp $(MYSQLCONNJAR) out/
 	javac *.java -d out
 
 run:
-	@java $(JAVAOPTS) -cp out perros/App $(PORT)
+	@java $(JAVAOPTS) -cp "out:out/`basename $(MYSQLCONNJAR)`" perros/App $(PORT)
 
 authbench:
 	ab -p post-auth.json -c 10 -n 10000 http://$(HOST):$(PORT)/auth
@@ -42,11 +45,30 @@ registerrecord:
 adminrepro:
 	curl 'localhost:8000/admin?username=david' -v
 
-adminsnoop:
+adminsnoop1:
 	sudo $(BCC)/opensnoop -p `pidof java` -x
+
+adminsnoop2:
+	$(PERFMAPAGENT)/bin/create-java-perf-map.sh `pidof java`
+	sudo $(BCC)/trace -p `pidof java` \
+		-U 'r::SyS_open (retval==-2) "failed open"'
 
 adminfix:
 	echo 'approve: david' | sudo tee /etc/perros.conf
+
+usersbench:
+	$(LABSROOT)/mysql-db.sh
+	./usersbench.sh "$(HOST):$(PORT)"
+
+usersrecord1:
+	sudo $(BCC)/dbslower mysql -m 1000
+
+usersrecord2:
+	sudo $(BCC)/trace 'u::query__exec__start "%s", arg1' -p `pidof mysqld`
+
+usersrecord3:
+	$(PERFMAPAGENT)/bin/create-java-perf-map.sh `pidof java`
+	sudo $(LABSROOT)/mysqlsniff.py -p `pidof java` -f "call getproduct(97)" -S
 
 clean:
 	rm -rf out
