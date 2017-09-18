@@ -51,6 +51,18 @@ dockerrun2:
 	$(eval DOCKERFLAGS=$(DOCKERFLAGS) --cpus=0.5)
 	$(docker-run)
 
+dockerrun2:		# in the background, run 'make statsbench'
+	$(eval DOCKERFLAGS=$(DOCKERFLAGS) --memory=100m)
+	$(eval JAVAOPTS=$(JAVAOPTS) -XshowSettings:vm -XX:+PrintGCDetails)
+	$(docker-run)
+
+dockerrun3:
+	$(eval DOCKERFLAGS=$(DOCKERFLAGS) --memory=100m)
+	$(eval JAVAOPTS=$(JAVAOPTS) -XshowSettings:vm -XX:+PrintGCDetails \
+		-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap \
+		-XX:MaxRAMFraction=1)
+	$(docker-run)
+
 authbench:
 	ab -p post-auth.json -c 10 -n 10000 http://$(HOST):$(PORT)/auth
 
