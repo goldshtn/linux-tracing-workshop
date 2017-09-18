@@ -153,6 +153,7 @@ class App {
         router.addRoute("/register", new RegisterHandler());
         router.addRoute("/admin", new AdminHandler());
         router.addRoute("/users", new UsersHandler());
+        router.addRoute("/stats", new StatsHandler());
 
         int port = Integer.parseInt(args[0]);
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
