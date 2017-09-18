@@ -5,6 +5,7 @@ PORT=8000
 PERFMAPAGENT=$(ALLROOT)/perf-map-agent
 FLAMEGRAPH=$(ALLROOT)/FlameGraph
 FGOUT=/tmp/fg.svg
+JAVACFLAGS=-Xlint:unchecked
 JAVAOPTS=-XX:+PreserveFramePointer
 APROFILER=$(ALLROOT)/async-profiler
 BCC=/usr/share/bcc/tools
@@ -17,7 +18,7 @@ dockersvc:
 build:
 	mkdir -p out
 	cp $(MYSQLCONNJAR) out/
-	javac *.java -d out
+	javac $(JAVACFLAGS) *.java -d out
 
 run:
 	@java $(JAVAOPTS) \
@@ -26,6 +27,10 @@ run:
 runext:
 	@java $(JAVAOPTS) -XX:+ExtendedDTraceProbes \
 		-cp "out:out/`basename $(MYSQLCONNJAR)`" perros/App $(PORT)
+
+dockerrun:
+	sudo docker run -p $(PORT):$(PORT) --rm -it -v $(CURDIR)/out:/app \
+		--name perros openjdk:8 java $(JAVAOPTS) -cp /app perros/App $(PORT)
 
 authbench:
 	ab -p post-auth.json -c 10 -n 10000 http://$(HOST):$(PORT)/auth
