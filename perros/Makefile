@@ -12,6 +12,9 @@ BCC=/usr/share/bcc/tools
 MYSQLCONNJAR=$(LABSROOT)/buggy/mysql-connector-java-5.1.40-bin.jar
 JVM=$(shell find /usr/lib/jvm -name libjvm.so -print -quit)
 CONTAINERNAME=perros
+# The allow-perf-event-open.json file is a minor modification of
+#   https://github.com/moby/moby/blob/master/profiles/seccomp/default.json
+# which whitelists the perf_event_open syscall.
 DOCKERFLAGS=-p $(PORT):$(PORT) --rm -it -v $(CURDIR)/out:/app \
 	--name $(CONTAINERNAME) --security-opt seccomp=allow-perf-event-open.json
 DOCKERCMD=perros:latest java $(JAVAOPTS) -cp /app perros/App $(PORT)
@@ -162,6 +165,8 @@ throttlerecord2:
 	$(flame-graph)
 
 profilecontainer:
+	# The container inherits these settings from the host
+	./perf-std-user.sh
 	sudo docker exec $(CONTAINERNAME) sh -c '/async-profiler/profiler.sh \
 		-d 10 -o collapsed -f /app/java.stacks `pidof java`'
 	mv out/java.stacks /tmp/java.stacks
