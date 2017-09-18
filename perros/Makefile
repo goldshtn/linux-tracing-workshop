@@ -11,6 +11,23 @@ APROFILER=$(ALLROOT)/async-profiler
 BCC=/usr/share/bcc/tools
 MYSQLCONNJAR=$(LABSROOT)/buggy/mysql-connector-java-5.1.40-bin.jar
 JVM=$(shell find /usr/lib/jvm -name libjvm.so -print -quit)
+DOCKERFLAGS=-p $(PORT):$(PORT) --rm -it -v $(CURDIR)/out:/app --name perros
+DOCKERCMD=openjdk:8 java $(JAVAOPTS) -cp /app perros/App $(PORT)
+CGROUPFS=/sys/fs/cgroup
+
+define flame-graph =
+	$(FLAMEGRAPH)/flamegraph.pl --colors=java > $(FGOUT) < /tmp/java.stacks
+	curl --upload-file $(FGOUT) https://transfer.sh
+endef
+
+define java-run =
+	@java $(JAVAOPTS) \
+		-cp "out:out/`basename $(MYSQLCONNJAR)`" perros/App $(PORT)
+endef
+
+define docker-run =
+	sudo docker run $(DOCKERFLAGS) $(DOCKERCMD)
+endef
 
 dockersvc:
 	sudo service docker start
@@ -21,16 +38,18 @@ build:
 	javac $(JAVACFLAGS) *.java -d out
 
 run:
-	@java $(JAVAOPTS) \
-		-cp "out:out/`basename $(MYSQLCONNJAR)`" perros/App $(PORT)
+	$(java-run)
 
 runext:
-	@java $(JAVAOPTS) -XX:+ExtendedDTraceProbes \
-		-cp "out:out/`basename $(MYSQLCONNJAR)`" perros/App $(PORT)
+	$(eval JAVAOPTS=$(JAVAOPTS) -XX:+ExtendedDTraceProbes)
+	$(java-run)
 
 dockerrun:
-	sudo docker run -p $(PORT):$(PORT) --rm -it -v $(CURDIR)/out:/app \
-		--name perros openjdk:8 java $(JAVAOPTS) -cp /app perros/App $(PORT)
+	$(docker-run)
+
+dockerrun2:
+	$(eval DOCKERFLAGS=$(DOCKERFLAGS) --cpus=0.5)
+	$(docker-run)
 
 authbench:
 	ab -p post-auth.json -c 10 -n 10000 http://$(HOST):$(PORT)/auth
@@ -38,9 +57,8 @@ authbench:
 authrecord:
 	$(PERFMAPAGENT)/bin/create-java-perf-map.sh `pidof java`
 	sudo perf record -a -F 97 -g -- sleep 10
-	sudo perf script -f | $(FLAMEGRAPH)/stackcollapse-perf.pl | \
-		$(FLAMEGRAPH)/flamegraph.pl --colors=java > $(FGOUT)
-	curl --upload-file $(FGOUT) https://transfer.sh
+	sudo perf script -f | $(FLAMEGRAPH)/stackcollapse-perf.pl > /tmp/java.stacks
+	$(flame-graph)
 
 registerbenchgood:
 	ab -p post-register.json -n 100000 http://$(HOST):$(PORT)/register
@@ -52,8 +70,7 @@ registerrecord:
 	./perf-std.user.sh
 	$(APROFILER)/profiler.sh -d 10 -o summary,flat `pidof java`
 	$(APROFILER)/profiler.sh -d 10 -o collapsed -f /tmp/java.stacks `pidof java`
-	$(FLAMEGRAPH)/flamegraph.pl --colors=java < /tmp/java.stacks > $(FGOUT)
-	curl --upload-file $(FGOUT) https://transfer.sh
+	$(flame-graph)
 
 adminrepro:
 	curl "$(HOST):$(PORT)/admin?username=david" -v
@@ -91,16 +108,14 @@ statsrecord1:
 	$(APROFILER)/profiler.sh -d 10 -m heap -o summary,flat `pidof java`
 	$(APROFILER)/profiler.sh -d 10 -m heap -o collapsed \
 		-f /tmp/java.stacks `pidof java`
-	$(FLAMEGRAPH)/flamegraph.pl --colors=java < /tmp/java.stacks > $(FGOUT)
-	curl --upload-file $(FGOUT) https://transfer.sh
+	$(flame-graph)
 
 statsrecord2:
 	$(PERFMAPAGENT)/bin/create-java-perf-map.sh `pidof java` dottedclass
 	sudo $(BCC)/funccount "$(JVM):*AllocTracer*" -p `pidof java` -d 5
 	sudo $(BCC)/stackcount "$(JVM):*AllocTracer*" -p `pidof java` -f \
 		-D 10 > /tmp/java.stacks
-	$(FLAMEGRAPH)/flamegraph.pl --colors=java < /tmp/java.stacks > $(FGOUT)
-	curl --upload-file $(FGOUT) https://transfer.sh
+	$(flame-graph)
 
 statsrecord3:
 	@echo Hit Ctrl+C after a few seconds to see the results from javaobjnew.
@@ -110,8 +125,19 @@ statsrecord4:
 	$(PERFMAPAGENT)/bin/create-java-perf-map.sh `pidof java` dottedclass
 	sudo $(BCC)/stackcount "u:$(JVM):object__alloc" -p `pidof java` -f \
 		-D 10 > /tmp/java.stacks
-	$(FLAMEGRAPH)/flamegraph.pl --colors=java < /tmp/java.stacks > $(FGOUT)
-	curl --upload-file $(FGOUT) https://transfer.sh
+	$(flame-graph)
+
+throttlerecord:
+	$(eval CID=`docker inspect perros --format '{{ .Id }}'`)
+	cat $(CGROUPFS)/cpu,cpuacct/docker/$(CID)/cpu.stat
+	sudo $(BCC)/runqlat -p `pidof java` -m 5 1
+	sudo $(BCC)/cpudist -p `pidof java` -m 5 1
+	sudo $(BCC)/cpudist -O -p `pidof java` -m 5 1
+
+throttlerecord2:	# TODO need to run perf-map-agent INSIDE the container
+	$(PERFMAPAGENT)/bin/create-java-perf-map.sh `pidof java` dottedclass
+	sudo $(BCC)/offcputime -f -p `pidof java` 5 > /tmp/java.stacks
+	$(flame-graph)
 
 clean:
 	rm -rf out

@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.Executors;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -181,7 +182,7 @@ class App {
         int port = Integer.parseInt(args[0]);
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
         server.createContext("/", router);
-        server.setExecutor(null);
+        server.setExecutor(Executors.newCachedThreadPool());
         System.out.println("Starting server...");
         server.start();
     }
