@@ -103,6 +103,9 @@ usersrecord3:
 statsbench:
 	ab -n 10000 "$(HOST):$(PORT)/stats?pages=10000"
 
+statsgc:
+	sudo $(BCC)/javastat 1 10
+
 statsrecord1:
 	./perf-std-user.sh
 	$(APROFILER)/profiler.sh -d 10 -m heap -o summary,flat `pidof java`
