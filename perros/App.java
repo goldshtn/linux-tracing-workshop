@@ -150,9 +150,12 @@ class Router implements HttpHandler {
         Class<? extends ApiHandler> clazz = routeClasses.get(route);
         if (clazz != null) {
             try {
-                Constructor<? extends ApiHandler> ctor = clazz.getConstructor();
-                result = ctor.newInstance(new Object[] {});
+                Constructor<? extends ApiHandler> ctor = 
+                    clazz.getDeclaredConstructor();
+                ctor.setAccessible(true);
+                result = ctor.newInstance();
             } catch (Exception e) {
+                e.printStackTrace();
                 result = BadRoute.getInstance();
             }
             routes.put(route, result);
