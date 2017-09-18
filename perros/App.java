@@ -6,6 +6,7 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Constructor;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
@@ -118,11 +119,12 @@ class Request {
 }
 
 class Router implements HttpHandler {
-    private Map<String, ApiHandler> routes = new HashMap<String, ApiHandler>();
+    private Map<String, ApiHandler> routes = new HashMap<>();
+    private Map<String, Class<? extends ApiHandler>> routeClasses = new HashMap<>();
 
     public void handle(HttpExchange exchange) throws IOException {
         String path = exchange.getRequestURI().getPath();
-        ApiHandler handler = routes.get(path);
+        ApiHandler handler = resolve(path);
         if (handler == null) {
             exchange.sendResponseHeaders(400, 0);
             exchange.getResponseBody().close();
@@ -136,8 +138,26 @@ class Router implements HttpHandler {
         }
     }
 
-    public void addRoute(String route, ApiHandler handler) {
-        routes.put(route, handler);
+    public void addRoute(String route, Class<? extends ApiHandler> clazz) {
+        routeClasses.put(route, clazz);
+    }
+
+    private ApiHandler resolve(String route) {
+        ApiHandler result = routes.get(route);
+        if (result != null) {
+            return result;
+        }
+        Class<? extends ApiHandler> clazz = routeClasses.get(route);
+        if (clazz != null) {
+            try {
+                Constructor<? extends ApiHandler> ctor = clazz.getConstructor();
+                result = ctor.newInstance(new Object[] {});
+            } catch (Exception e) {
+                result = BadRoute.getInstance();
+            }
+            routes.put(route, result);
+        }
+        return result;
     }
 }
 
@@ -149,11 +169,11 @@ class App {
         }
 
         Router router = new Router();
-        router.addRoute("/auth", new AuthHandler());
-        router.addRoute("/register", new RegisterHandler());
-        router.addRoute("/admin", new AdminHandler());
-        router.addRoute("/users", new UsersHandler());
-        router.addRoute("/stats", new StatsHandler());
+        router.addRoute("/auth", AuthHandler.class);
+        router.addRoute("/register", RegisterHandler.class);
+        router.addRoute("/admin", AdminHandler.class);
+        router.addRoute("/users", UsersHandler.class);
+        router.addRoute("/stats", StatsHandler.class);
 
         int port = Integer.parseInt(args[0]);
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
