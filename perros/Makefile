@@ -9,7 +9,10 @@ JAVAOPTS=-XX:+PreserveFramePointer
 APROFILER=$(ALLROOT)/async-profiler
 BCC=/usr/share/bcc/tools
 MYSQLCONNJAR=$(LABSROOT)/buggy/mysql-connector-java-5.1.40-bin.jar
-JVM=`find /usr/lib/jvm -name libjvm.so -print -quit`
+JVM=$(shell find /usr/lib/jvm -name libjvm.so -print -quit)
+
+dockersvc:
+	sudo service docker start
 
 build:
 	mkdir -p out
