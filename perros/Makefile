@@ -11,8 +11,10 @@ APROFILER=$(ALLROOT)/async-profiler
 BCC=/usr/share/bcc/tools
 MYSQLCONNJAR=$(LABSROOT)/buggy/mysql-connector-java-5.1.40-bin.jar
 JVM=$(shell find /usr/lib/jvm -name libjvm.so -print -quit)
-DOCKERFLAGS=-p $(PORT):$(PORT) --rm -it -v $(CURDIR)/out:/app --name perros
-DOCKERCMD=openjdk:8 java $(JAVAOPTS) -cp /app perros/App $(PORT)
+CONTAINERNAME=perros
+DOCKERFLAGS=-p $(PORT):$(PORT) --rm -it -v $(CURDIR)/out:/app \
+	--name $(CONTAINERNAME)
+DOCKERCMD=perros:latest java $(JAVAOPTS) -cp /app perros/App $(PORT)
 CGROUPFS=/sys/fs/cgroup
 
 define flame-graph =
@@ -28,6 +30,9 @@ endef
 define docker-run =
 	sudo docker run $(DOCKERFLAGS) $(DOCKERCMD)
 endef
+
+dockerbuild:
+	sudo docker build -t perros:latest - < Dockerfile
 
 dockersvc:
 	sudo service docker start
@@ -51,12 +56,12 @@ dockerrun2:
 	$(eval DOCKERFLAGS=$(DOCKERFLAGS) --cpus=0.5)
 	$(docker-run)
 
-dockerrun2:		# in the background, run 'make statsbench'
+dockerrun3:		# in the background, run 'make statsbench'
 	$(eval DOCKERFLAGS=$(DOCKERFLAGS) --memory=100m)
 	$(eval JAVAOPTS=$(JAVAOPTS) -XshowSettings:vm -XX:+PrintGCDetails)
 	$(docker-run)
 
-dockerrun3:
+dockerrun4:
 	$(eval DOCKERFLAGS=$(DOCKERFLAGS) --memory=100m)
 	$(eval JAVAOPTS=$(JAVAOPTS) -XshowSettings:vm -XX:+PrintGCDetails \
 		-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap \
@@ -143,14 +148,16 @@ statsrecord4:
 	$(flame-graph)
 
 throttlerecord:
-	$(eval CID=`docker inspect perros --format '{{ .Id }}'`)
+	$(eval CID=`docker inspect $(CONTAINERNAME) --format '{{ .Id }}'`)
 	cat $(CGROUPFS)/cpu,cpuacct/docker/$(CID)/cpu.stat
 	sudo $(BCC)/runqlat -p `pidof java` -m 5 1
 	sudo $(BCC)/cpudist -p `pidof java` -m 5 1
 	sudo $(BCC)/cpudist -O -p `pidof java` -m 5 1
 
-throttlerecord2:	# TODO need to run perf-map-agent INSIDE the container
-	$(PERFMAPAGENT)/bin/create-java-perf-map.sh `pidof java` dottedclass
+throttlerecord2:
+	sudo docker exec $(CONTAINERNAME) sh -c 'cd perf-map-agent/out && \
+		java -cp attach-main.jar:$$JAVA_HOME/lib/tools.jar \
+		net.virtualvoid.perf.AttachOnce `pidof java` dottedclass'
 	sudo $(BCC)/offcputime -f -p `pidof java` 5 > /tmp/java.stacks
 	$(flame-graph)
 
