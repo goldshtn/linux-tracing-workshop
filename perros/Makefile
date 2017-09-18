@@ -13,7 +13,7 @@ MYSQLCONNJAR=$(LABSROOT)/buggy/mysql-connector-java-5.1.40-bin.jar
 JVM=$(shell find /usr/lib/jvm -name libjvm.so -print -quit)
 CONTAINERNAME=perros
 DOCKERFLAGS=-p $(PORT):$(PORT) --rm -it -v $(CURDIR)/out:/app \
-	--name $(CONTAINERNAME)
+	--name $(CONTAINERNAME) --security-opt seccomp=allow-perf-event-open.json
 DOCKERCMD=perros:latest java $(JAVAOPTS) -cp /app perros/App $(PORT)
 CGROUPFS=/sys/fs/cgroup
 
@@ -159,6 +159,12 @@ throttlerecord2:
 		java -cp attach-main.jar:$$JAVA_HOME/lib/tools.jar \
 		net.virtualvoid.perf.AttachOnce `pidof java` dottedclass'
 	sudo $(BCC)/offcputime -f -p `pidof java` 5 > /tmp/java.stacks
+	$(flame-graph)
+
+profilecontainer:
+	sudo docker exec $(CONTAINERNAME) sh -c '/async-profiler/profiler.sh \
+		-d 10 -o collapsed -f /app/java.stacks `pidof java`'
+	mv out/java.stacks /tmp/java.stacks
 	$(flame-graph)
 
 clean:
