@@ -45,12 +45,26 @@ build:
 	cp $(MYSQLCONNJAR) out/
 	javac $(JAVACFLAGS) *.java -d out
 
+buildagent:
+	@if test -z "${JAVA_HOME}"; then \
+		echo "JAVA_HOME must be set to build the agent."; \
+		exit 1; \
+	fi;
+	g++ -std=c++11 -O2 -fPIC -shared -o libagent.so -ldl -lpthread \
+		-I${JAVA_HOME}/include -I${JAVA_HOME}/include/linux agent.cc
+
 run:
 	$(java-run)
 
 runext:
 	$(eval JAVAOPTS=$(JAVAOPTS) -XX:+ExtendedDTraceProbes)
 	$(java-run)
+
+attachagent:
+	$(APROFILER)/build/jattach `pidof java` load $(CURDIR)/libagent.so true
+
+dumpagent:
+	$(APROFILER)/build/jattach `pidof java` load $(CURDIR)/libagent.so true dump
 
 dockerrun:
 	$(docker-run)
