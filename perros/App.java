@@ -6,7 +6,14 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
@@ -17,8 +24,16 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-interface ApiHandler {
-    void handle(Request request) throws Exception;
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@interface Get {
+    String value() default "";
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@interface Post {
+    String value() default "";
 }
 
 class Request {
@@ -120,39 +135,59 @@ class Request {
 }
 
 class Router implements HttpHandler {
-    private Map<String, ApiHandler> routes = new HashMap<>();
-    private Map<String, Class<? extends ApiHandler>> routeClasses = new HashMap<>();
+    private Map<String, Object> routes = new HashMap<>();
+    private Map<String, Class<?>> routeClasses = new HashMap<>();
 
     public void handle(HttpExchange exchange) throws IOException {
         String path = exchange.getRequestURI().getPath();
-        ApiHandler handler = resolve(path);
+        Object handler = resolve(path);
         if (handler == null) {
             exchange.sendResponseHeaders(400, 0);
             exchange.getResponseBody().close();
         } else {
             Request request = new Request(exchange);
             try {
-                handler.handle(request);
-            } catch (Exception e) {
-                request.internalServerError(e.getClass().toString());
+                invoke(handler, request);
+            } catch (InvocationTargetException e) {
+                request.internalServerError(e.getCause().getClass().toString());
+            } catch (Exception e2) {
+                request.internalServerError(e2.getClass().toString());
             }
         }
     }
 
-    public void addRoute(String route, Class<? extends ApiHandler> clazz) {
+    public void addRoute(String route, Class<?> clazz) {
         routeClasses.put(route, clazz);
     }
 
-    private ApiHandler resolve(String route) {
-        ApiHandler result = routes.get(route);
+    private void invoke(Object handler, Request request) throws Exception {
+        Method handlerMethod = null;
+        for (Method method : handler.getClass().getDeclaredMethods()) {
+            for (Annotation ann : method.getDeclaredAnnotations()) {
+                if (ann instanceof Get && request.method().equals("GET")) {
+                    handlerMethod = method;
+                } else if (ann instanceof Post && request.method().equals("POST")) {
+                    handlerMethod = method;
+                }
+            }
+        }
+        if (handlerMethod != null) {
+            handlerMethod.setAccessible(true);
+            handlerMethod.invoke(handler, request);
+        } else {
+            request.badRequest();
+        }
+    }
+
+    private Object resolve(String route) {
+        Object result = routes.get(route);
         if (result != null) {
             return result;
         }
-        Class<? extends ApiHandler> clazz = routeClasses.get(route);
+        Class<?> clazz = routeClasses.get(route);
         if (clazz != null) {
             try {
-                Constructor<? extends ApiHandler> ctor = 
-                    clazz.getDeclaredConstructor();
+                Constructor<?> ctor = clazz.getDeclaredConstructor();
                 ctor.setAccessible(true);
                 result = ctor.newInstance();
             } catch (Exception e) {

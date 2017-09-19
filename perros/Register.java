@@ -6,7 +6,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class RegisterHandler implements ApiHandler {
+class RegisterHandler {
+    @Post
     public void handle(Request request) throws IOException {
         String username = request.bodyJson().get("username").toString();
         String email = request.bodyJson().get("email").toString();

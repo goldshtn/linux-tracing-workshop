@@ -7,7 +7,8 @@ import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;
 import org.w3c.dom.*;
 
-class StatsHandler implements ApiHandler {
+class StatsHandler {
+    @Get
     public void handle(Request request) throws Exception {
         int pages = Integer.parseInt(request.queryParams().get("pages"));
         String stats = generateStats(pages);

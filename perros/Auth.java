@@ -6,7 +6,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Map;
 
-class AuthHandler implements ApiHandler {
+class AuthHandler {
+    @Post
     public void handle(Request request) throws IOException {
         String username = request.bodyJson().get("username").toString();
         String password = request.bodyJson().get("password").toString();

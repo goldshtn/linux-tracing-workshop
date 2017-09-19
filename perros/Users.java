@@ -86,11 +86,12 @@ class DAL {
     }
 }
 
-class UsersHandler implements ApiHandler {
+class UsersHandler {
     public UsersHandler() throws Exception {
         DAL.init();
     }
 
+    @Get
     public void handle(Request request) throws Exception {
         int userId = Integer.parseInt(request.queryParams().get("user"));
         User user = User.load(userId);
