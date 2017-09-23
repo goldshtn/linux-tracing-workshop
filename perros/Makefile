@@ -15,7 +15,7 @@ CONTAINERNAME=perros
 # The allow-perf-event-open.json file is a minor modification of
 #   https://github.com/moby/moby/blob/master/profiles/seccomp/default.json
 # which whitelists the perf_event_open syscall.
-DOCKERFLAGS=-p $(PORT):$(PORT) --rm -it -v $(CURDIR)/out:/app \
+DOCKERFLAGS=-p $(PORT):$(PORT) --rm -it -v $(CURDIR)/out:/app -v /tmp:/tmp \
 	--name $(CONTAINERNAME) --security-opt seccomp=allow-perf-event-open.json
 DOCKERCMD=perros:latest java $(JAVAOPTS) -cp /app perros/App $(PORT)
 CGROUPFS=/sys/fs/cgroup
