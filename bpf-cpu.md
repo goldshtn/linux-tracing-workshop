@@ -24,7 +24,7 @@ Now, run `./blocky`. It prints out the number of requests processed, going at a 
 To understand where the application is spending CPU time (which, as we saw, is not most of the wall-clock time), run the following command:
 
 ```
-profile -F 997 -p $(pidof blocky)
+# profile -F 997 -p $(pidof blocky)
 ```
 
 > Note: The `profile` tool requires BCC support for `perf_events`, which was introduced in Linux 4.9. If you are running an older kernel, this tool will not work. You can use `perf record` instead, as discussed in [a previous lab](perf.md).
@@ -40,7 +40,7 @@ After a few seconds, hit Ctrl+C to stop the `profile` tool. The call stacks you 
 To determine how much time the application is spending on-CPU and off-CPU, the `cpudist` tool can be very useful. It produces a histogram of time spent in each of the two CPU states, and helps understand the context-switching characteristics of your application. Let's run it:
 
 ```
-cpudist -p $(pidof blocky)
+# cpudist -p $(pidof blocky)
 ```
 
 After a few seconds, hit Ctrl+C to get a report. You will probably see a bimodal distribution, with a mode around the quantum length on your system (which is typically in the 4-8ms bin), and another, bigger mode around very short intervals -- tens or hundreds of microseconds each. It is these smaller intervals that we should be worried about. These bursts of activity indicate that the application threads want to do some work, and are successful at doing it for a very short time, but then they get switched out.
@@ -48,7 +48,7 @@ After a few seconds, hit Ctrl+C to get a report. You will probably see a bimodal
 Now, let's try to identify how long the application threads spend off-CPU, using the same tool:
 
 ```
-cpudist -O -p $(pidof blocky)
+# cpudist -O -p $(pidof blocky)
 ```
 
 Again, hit Ctrl+C after a few seconds to get the histogram. You might get a bimodal distribution again, but the biggest mode this time is in the much longer bins -- 8-16ms and 16-32ms. Again, these are time intervals when some application thread was off the CPU waiting for something. So we have a great number of multi-millisecond waits. Where are these waits coming from?
@@ -60,13 +60,13 @@ Again, hit Ctrl+C after a few seconds to get the histogram. You might get a bimo
 The `offcputime` tool from BCC can be used to answer this final question. It collects stack traces whenever an application thread is blocked (switched off the CPU), and identifies the duration of time that blockage lasted. The output can be interpreted as a flame graph, much like on-CPU data. Let's run it in folded mode to generate data suitable for producing a flame graph:
 
 ```
-offcputime -f -p $(pidof blocky) > folded-stacks
+# offcputime -f -p $(pidof blocky) > folded-stacks
 ```
 
 After a few seconds, hit Ctrl+C. At this point, you can also stop the blocky process. To generate a flame graph, run:
 
 ```
-flamegraph.pl folded-stacks > offcpu.svg
+# FlameGraph/flamegraph.pl folded-stacks > offcpu.svg
 ```
 
 Inspecting the flame graph should show two sources of contention: one in the `backend_handler` function, which calls `nanosleep`, and another in the `request_processor` function, which calls `__lll_lock_wait`, which calls the `futex` syscall. These are specific, identifiable places in the source code that can now be inspected to understand why they're causing blockages. If you review [blocky.c](blocky.c), you'll find that the `backend_handler` function is the main culprit: it acquires a lock which the `request_processor` threads also require to make progress, and then occasionally sleeps while holding the lock!
