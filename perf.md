@@ -99,10 +99,10 @@ $ ./perf-java-report-stack 2132   # use the pid from the previous step
 
 If everything went well, you should see the `perf report` ncurses UI, showing the bottlenecks in the Java program. These will likely be `App::main` and `App::isPrime`, because the smaller methods were optimized away (inlined). You can repeat the experiment and run Slowy with the `-XX:-Inline` switch to prevent this optimization and obtain more accurate results that include the `App::isDivisible` method.
 
-To generate flame graphs from this report, you need the perf.data file created by `perf`. By default, `perf-java-report-stack` places it in `/tmp/perf-PID.map`, where _PID_ is the process ID of your Java process. You can then run the following command to generate a flame graph:
+To generate flame graphs from this report, you need the perf.data file created by `perf`. By default, `perf-java-report-stack` places it in `/tmp/perf-PID.data`, where _PID_ is the process ID of your Java process. You can then run the following command to generate a flame graph:
 
 ```
-$ perf script | FlameGraph/stackcollapse-perf.pl | FlameGraph/flamegraph.pl --colors=java > java.svg
+$ perf script -i /tmp/perf-PID.data | FlameGraph/stackcollapse-perf.pl | FlameGraph/flamegraph.pl --colors=java > java.svg
 ```
 
 Note the `--colors=java` parameter, which instructs the flamegraph.pl script to colorize functions according to their type: Java methods, native methods, and kernel methods will all get their own distinctive color palettes.
