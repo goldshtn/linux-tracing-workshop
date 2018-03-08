@@ -101,7 +101,7 @@ registerbenchbad:
 	ab -p post-register-bad.json -n 1000 http://$(HOST):$(PORT)/register
 
 registerrecord:
-	./perf-std.user.sh
+	./perf-std-user.sh
 	$(APROFILER)/profiler.sh -d 10 -o summary,flat `pidof java`
 	$(APROFILER)/profiler.sh -d 10 -o collapsed -f /tmp/java.stacks `pidof java`
 	$(flame-graph)
@@ -142,8 +142,8 @@ statsgc:
 
 statsrecord1:
 	./perf-std-user.sh
-	$(APROFILER)/profiler.sh -d 10 -m heap -o summary,flat `pidof java`
-	$(APROFILER)/profiler.sh -d 10 -m heap -o collapsed \
+	$(APROFILER)/profiler.sh -d 10 -e alloc -o summary,flat `pidof java`
+	$(APROFILER)/profiler.sh -d 10 -e alloc -o collapsed \
 		-f /tmp/java.stacks `pidof java`
 	$(flame-graph)
 
