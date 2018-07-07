@@ -9,8 +9,8 @@ In this lab, you will work with several tools from BCC to investigate an applica
 Run the following command to compile the target application:
 
 ```
-$ gcc -g -fno-omit-frame-pointer -fno-inline -lpthread blocky.c -o blocky     # on Fedora
-$ gcc -g -fno-omit-frame-pointer -fno-inline -pthread  blocky.c -o blocky     # on Ubuntu
+$ gcc -g -std=gnu99 -fno-omit-frame-pointer -fno-inline -lpthread blocky.c -o blocky     # on Fedora
+$ gcc -g -std=gnu99 -fno-omit-frame-pointer -fno-inline -pthread  blocky.c -o blocky     # on Ubuntu
 ```
 
 Now, run `./blocky`. It prints out the number of requests processed, going at a nice pace. But is it really using all processors effectively? Run `top` (or `htop`) to find out -- it looks like the application is barely making a dent in CPU utilization. Most of the time, the system is idle.
