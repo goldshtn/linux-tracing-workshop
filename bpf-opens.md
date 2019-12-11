@@ -33,7 +33,7 @@ It looks like the process is spending a bit of time in kernel mode.
 If the process is running frequently in kernel mode, it must be making quite a bunch of syscalls. To characterize its workload, we can use the BCC `syscount` tool:
 
 ```
-# syscount -p $(pidof server)
+# syscount -c -p $(pidof server)
 ```
 
 This collects all syscall events. Press Ctrl+C after a few seconds to stop collection. It looks like the application is calling `nanosleep()` and `open()` quite frequently.
