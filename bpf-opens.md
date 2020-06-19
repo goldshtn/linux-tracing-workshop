@@ -57,7 +57,7 @@ The problem becomes apparent -- the application is trying to open the `/etc/trac
 The `argdist` tool from BCC can be used for quick argument analysis when you're interested in the values an application passes to a certain function or syscall. In our case, let's get a histogram of sleep durations by tracing the `nanosleep()` syscall in the application process:
 
 ```
-# argdist -p $(pidof server) -H 'p::SyS_nanosleep(struct timespec *time):u64:time->tv_nsec'
+# argdist -p $(pidof server) -H 'p::do_nanosleep(struct timespec *time):u64:time->tv_nsec'
 ```
 
 This prints a histogram (using -H) of the sleep durations, which seem to be concentrated in one specific bin: 512-1023 ns. Indeed, inspecting the application source code you can verify that it calls `usleep(1)`, which corresponds to 1000 nanoseconds.
